@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.WheatherApp" parent="Theme.Material3.DayNight.NoActionBar">
+
+    </style>
+
+    <style name="Theme.WheatherApp" parent="Base.Theme.WheatherApp">
+        <item name="fontFamily">@font/pixel_vcr</item>
+        <item name="android:colorBackground">#9F9DB5</item>
+    </style>
+
+    <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@null</item>
+    </style>
+
+    <style name="BottomNavigationView" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="fontFamily">@font/pixel_vcr</item>
+    </style>
+
+    <style name="BottomNavigationView.Active" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="fontFamily">@font/pixel_vcr</item>
+    </style>
+
+</resources>

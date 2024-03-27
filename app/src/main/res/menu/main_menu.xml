@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nowFragment"
+        android:icon="@drawable/bottom_nav_selector"
+        android:title="@string/now" />
+    <item
+        android:id="@+id/hourlyFragment"
+        android:icon="@drawable/bottom_nav_selector"
+        android:title="@string/hourly" />
+    <item
+        android:id="@+id/weeklyFragment"
+        android:icon="@drawable/bottom_nav_selector"
+        android:title="@string/weekly" />
+
+</menu>

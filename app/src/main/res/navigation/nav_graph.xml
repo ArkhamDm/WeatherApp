@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nowFragment">
+
+    <fragment
+        android:id="@+id/nowFragment"
+        android:name="dev.arkhamd.wheatherapp.ui.NowFragment"
+        android:label="fragment_now"
+        tools:layout="@layout/fragment_now" />
+    <fragment
+        android:id="@+id/hourlyFragment"
+        android:name="dev.arkhamd.wheatherapp.ui.HourlyFragment"
+        android:label="fragment_hourly"
+        tools:layout="@layout/fragment_hourly" />
+    <fragment
+        android:id="@+id/weeklyFragment"
+        android:name="dev.arkhamd.wheatherapp.ui.WeeklyFragment"
+        android:label="fragment_weekly"
+        tools:layout="@layout/fragment_weekly" />
+</navigation>
