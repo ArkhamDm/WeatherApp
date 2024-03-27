@@ -10,6 +10,7 @@ import dev.arkhamd.lib.GeocodingApi
 import dev.arkhamd.weaherdatabase.WeatherDatabase
 import dev.arkhamd.weatherapi.WeatherApi
 import dev.arkhamd.wheatherapp.BuildConfig
+import dev.arkhamd.wheatherapp.BuildConfig.API_KEY
 import javax.inject.Singleton
 
 @Module
@@ -20,7 +21,7 @@ object Module {
     fun provideWeatherApi(): WeatherApi {
         return WeatherApi(
             baseUrl = BuildConfig.WEATHER_BASE_URL,
-            apiKey = BuildConfig.API_KEY,
+            apiKey = API_KEY,
         )
     }
 
