@@ -34,7 +34,7 @@ class NowFragment : Fragment() {
                             windSpeed = weather.data[0].windInfo.speed.toInt().toString()
                         )
                     }
-                    binding.shimmerWeather.hideShimmer()
+                    binding.weatherMainInfo.shimmerLayout.hideShimmer()
                 }
                 is WeatherResult.Database -> {
                     if (weather.data != null) {
@@ -45,13 +45,13 @@ class NowFragment : Fragment() {
                             windSpeed = weather.data[0].windInfo.speed.toInt().toString()
                         )
                     }
-                    binding.shimmerWeather.hideShimmer()
+                    binding.weatherMainInfo.shimmerLayout.hideShimmer()
                 }
                 is WeatherResult.Error -> {
 
                 }
                 is WeatherResult.Loading -> {
-                    binding.shimmerWeather.startShimmer()
+                    binding.weatherMainInfo.shimmerLayout.stopShimmer()
                 }
             }
         }

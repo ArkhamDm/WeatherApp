@@ -33,11 +33,9 @@ class HourlyFragment : Fragment() {
                         )
 
                     }
+                    binding.weatherMainInfo.shimmerLayout.hideShimmer()
                 }
                 is WeatherResult.Database -> {
-                    setLoading()
-                }
-                is WeatherResult.Error -> {
                     if (weather.data != null) {
 
                         setLoadedData(
@@ -46,9 +44,13 @@ class HourlyFragment : Fragment() {
                         )
 
                     }
+                    binding.weatherMainInfo.shimmerLayout.hideShimmer()
+                }
+                is WeatherResult.Error -> {
+
                 }
                 is WeatherResult.Loading -> {
-
+                    binding.weatherMainInfo.shimmerLayout.startShimmer()
                 }
             }
         }
@@ -78,10 +80,6 @@ class HourlyFragment : Fragment() {
             binding,
             weatherData = weatherData
         )
-    }
-
-    private fun setLoading() {
-
     }
 
     private fun changeMainWeatherInfo(
