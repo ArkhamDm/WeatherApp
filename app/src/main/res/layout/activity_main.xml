@@ -27,9 +27,10 @@
         app:defaultNavHost="true"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cityText"
+        app:layout_constraintVertical_bias="0.0"
         app:navGraph="@navigation/nav_graph" />
 
     <TextView
@@ -37,6 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
+        android:layout_marginEnd="16dp"
         android:text="Санкт-Петербург"
         android:textColor="#393375"
         android:textSize="@dimen/text_large"
@@ -59,5 +61,16 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/main_menu" />
+
+    <ImageView
+        android:id="@+id/weather_state"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="8dp"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toBottomOf="@+id/cityText"
+        app:layout_constraintStart_toEndOf="@+id/cityText"
+        app:layout_constraintTop_toTopOf="@+id/cityText"
+        app:srcCompat="@drawable/weather_warning" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

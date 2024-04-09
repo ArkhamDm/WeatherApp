@@ -1,7 +1,5 @@
 package dev.arkhamd.wheatherapp.ui.viewModel
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,14 +10,13 @@ import dev.arkhamd.data.model.WeatherInfo
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository
 ): ViewModel() {
     private val _weatherInfo: MutableLiveData<WeatherResult<List<WeatherInfo>>> by lazy {
-        MutableLiveData<WeatherResult<List<WeatherInfo>>>(WeatherResult.OtherError())
+        MutableLiveData<WeatherResult<List<WeatherInfo>>>(WeatherResult.Loading())
     }
     val weatherInfo: LiveData<WeatherResult<List<WeatherInfo>>>
         get() = _weatherInfo
@@ -28,39 +25,33 @@ class WeatherViewModel @Inject constructor(
         val disposable = weatherRepository.getWeather(city)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { response ->
-                    when (response) {
-                        is RequestResult.DatabaseSuccess -> {
-                            _weatherInfo.postValue(
-                                WeatherResult.Database(response.data)
-                            )
-                        }
-                        is RequestResult.ApiSuccess -> {
-                            _weatherInfo.postValue(
-                                WeatherResult.Api(response.data)
-                            )
-                        }
-                        is RequestResult.ApiError -> {
-                            _weatherInfo.postValue(
-                                WeatherResult.ApiError(response.data)
-                            )
-                        }
+            .subscribe { response ->
+                when (response) {
+                    is RequestResult.DatabaseSuccess -> {
+                        _weatherInfo.postValue(
+                            WeatherResult.Database(response.data!!)
+                        )
                     }
-                },
-                {
-                    _weatherInfo.postValue(
-                        WeatherResult.OtherError()
-                    )
-                    Log.e(TAG, it.message.toString())
-                },
-            )
+
+                    is RequestResult.ApiSuccess -> {
+                        _weatherInfo.postValue(
+                            WeatherResult.Api(response.data!!)
+                        )
+                    }
+
+                    is RequestResult.Error -> {
+                        _weatherInfo.postValue(
+                            WeatherResult.Error()
+                        )
+                    }
+                }
+            }
     }
 }
 
-sealed class WeatherResult<E>(val data: List<WeatherInfo>?) {
-    class Database<E>(data: List<WeatherInfo>): WeatherResult<E>(data)
-    class Api<E>(data: List<WeatherInfo>): WeatherResult<E>(data)
-    class ApiError<E>(data: List<WeatherInfo>): WeatherResult<E>(data)
-    class OtherError<E>: WeatherResult<E>(null)
+sealed class WeatherResult<E>(val data: E?) {
+    class Loading<E>: WeatherResult<E>(null)
+    class Database<E>(data: E): WeatherResult<E>(data)
+    class Api<E>(data: E): WeatherResult<E>(data)
+    class Error<E>: WeatherResult<E>(null)
 }

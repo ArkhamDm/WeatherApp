@@ -30,7 +30,7 @@ object Module {
     fun provideGeocodingApi(): GeocodingApi {
         return GeocodingApi(
             baseUrl = BuildConfig.GEOCODING_BASE_URL,
-            apiKey = BuildConfig.API_KEY
+            apiKey = API_KEY
         )
     }
 

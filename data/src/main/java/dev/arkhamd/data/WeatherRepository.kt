@@ -4,12 +4,10 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import dev.arkhamd.data.model.WeatherInfo
 import dev.arkhamd.lib.GeocodingApi
-import dev.arkhamd.lib.model.Response
 import dev.arkhamd.weaherdatabase.WeatherDatabase
 import dev.arkhamd.weaherdatabase.model.WeatherInfoDBO
 import dev.arkhamd.weatherapi.WeatherApi
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
 import jakarta.inject.Inject
 import java.util.concurrent.TimeUnit
@@ -19,52 +17,50 @@ class WeatherRepository @Inject constructor(
     private val weatherApi: WeatherApi,
     private val geocodingApi: GeocodingApi
 ) {
-    fun getWeather(city: String): Observable<RequestResult<List<WeatherInfo>>> {
-        return Observable.concatArray(
-            getDataFromDatabase(),
-            getDataFromApi(city)
-        )
-            .onErrorResumeNext(getDataFromDatabase(apiError = true))
+    fun getWeather(city: String): Single<RequestResult<List<WeatherInfo>>> {
+        return getDataFromApi(city)
+            .onErrorResumeNext(getDataFromDatabase())
     }
 
-    private fun getDataFromDatabase(apiError: Boolean = false): Observable<RequestResult<List<WeatherInfo>>> {
+    private fun getDataFromDatabase(): Single<RequestResult<List<WeatherInfo>>> {
         return database.weatherInfoDao.getAll()
-            .filter { it.isNotEmpty() }
-            .map { response ->
-                if (apiError) {
-                    RequestResult.ApiError(response.map {it.toWeatherInfo()})
-                }
-                else {
-                    RequestResult.DatabaseSuccess(response.map { it.toWeatherInfo() })
+            .flatMap { response ->
+                if (response.isNotEmpty()) {
+                    Single.just(RequestResult.DatabaseSuccess(response.map { it.toWeatherInfo() }))
+                } else {
+                    Single.just(RequestResult.Error())
                 }
             }
-            .toObservable()
-            .doOnNext {
-                Log.d(TAG, "get data from database ${it.data.size}")
+            .doOnSuccess { data ->
+                Log.d(TAG, "get data from database ${data.data?.size}")
+            }
+            .doOnError { it ->
+                Log.d(TAG, "error database", it)
             }
     }
 
-    private fun getDataFromApi(city: String): Observable<RequestResult.ApiSuccess<List<WeatherInfo>>> {
+    private fun getDataFromApi(city: String): Single<RequestResult<List<WeatherInfo>>> {
         return geocodingApi.getCords(city)
+            .timeout(5, TimeUnit.SECONDS)
             .flatMap { cords ->
                 weatherApi.getForecast(lat = cords[0].lat, lon = cords[0].lon)
-                    .map { response ->
-                        val result = response.weatherInfoDTO.map { it.toWeatherInfo() }
-                        RequestResult.ApiSuccess(result)
+                    .flatMap { response ->
+                        if (response.weatherInfoDTO.isNotEmpty()) {
+                            val data = response.weatherInfoDTO.map { it.toWeatherInfo() }
+                            Single.just(RequestResult.ApiSuccess(data))
+                        } else {
+                            Single.just(RequestResult.Error())
+                        }
                     }
             }
-            .toObservable()
-            .timeout(5, TimeUnit.SECONDS)
-            .doOnNext {
-                Log.d(TAG, "get data from api ${it.data.size}")
-                if (it.data.isNotEmpty()) {
+            .doOnSuccess {
+                if (!it.data.isNullOrEmpty()) {
                     clearAndAddDataToDatabase(
                         it.data.map { weatherInfo -> weatherInfo.toWeatherInfoDBO() }
                     ).subscribe()
                 }
-            }
-            .doOnError {
-                Log.e(TAG, it.message.toString())
+
+                Log.d(TAG, "get data from api ${it.data?.size}")
             }
 
     }
@@ -81,8 +77,8 @@ class WeatherRepository @Inject constructor(
 
 }
 
-sealed class RequestResult<E>(val data: E, val msg: String?) {
-    class ApiError<E>(data: E): RequestResult<E>(data, null)
-    class DatabaseSuccess<E>(data: E): RequestResult<E>(data, null)
-    class ApiSuccess<E>(data: E): RequestResult<E>(data, null)
+sealed class RequestResult<E>(val data: E?) {
+    class DatabaseSuccess<E>(data: E): RequestResult<E>(data)
+    class ApiSuccess<E>(data: E): RequestResult<E>(data)
+    class Error<E>: RequestResult<E>(null)
 }

@@ -7,8 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.NowFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <include
         android:id="@+id/weather_main_info"
         layout="@layout/main_weather"
@@ -16,7 +14,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
+
 
     <ImageView
         android:id="@+id/imageView"

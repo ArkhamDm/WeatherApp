@@ -34,8 +34,10 @@ class HourlyFragment : Fragment() {
 
                     }
                 }
-                is WeatherResult.ApiError -> {
-                    //add alert icon of api error
+                is WeatherResult.Database -> {
+                    setLoading()
+                }
+                is WeatherResult.Error -> {
                     if (weather.data != null) {
 
                         setLoadedData(
@@ -44,14 +46,8 @@ class HourlyFragment : Fragment() {
                         )
 
                     }
-
                 }
-                is WeatherResult.Database -> {
-                    setLoading()
-                }
-                is WeatherResult.OtherError -> {
-                    //add alert icon of unknown error
-
+                is WeatherResult.Loading -> {
 
                 }
             }
