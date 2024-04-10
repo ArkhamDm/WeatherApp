@@ -9,4 +9,5 @@
     <string name="wind_speed">wind-speed</string>
     <string name="temperature">temperature</string>
     <string name="metres_in_second">м/с</string>
+    <string name="celsiusMeasureType">℃</string>
 </resources>

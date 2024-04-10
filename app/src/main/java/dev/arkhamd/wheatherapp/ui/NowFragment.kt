@@ -31,7 +31,8 @@ class NowFragment : Fragment() {
                             binding,
                             temperature = weather.data[0].mainInfo.temp.toString(),
                             humidity = weather.data[0].mainInfo.humidity.toString(),
-                            windSpeed = weather.data[0].windInfo.speed.toInt().toString()
+                            windSpeed = weather.data[0].windInfo.speed.toInt().toString(),
+                            temperatureFeelsLike = weather.data[0].mainInfo.feelsLike.toString()
                         )
                     }
                     binding.weatherMainInfo.shimmerLayout.hideShimmer()
@@ -42,7 +43,8 @@ class NowFragment : Fragment() {
                             binding,
                             temperature = weather.data[0].mainInfo.temp.toString(),
                             humidity = weather.data[0].mainInfo.humidity.toString(),
-                            windSpeed = weather.data[0].windInfo.speed.toInt().toString()
+                            windSpeed = weather.data[0].windInfo.speed.toInt().toString(),
+                            temperatureFeelsLike = weather.data[0].mainInfo.feelsLike.toString()
                         )
                     }
                     binding.weatherMainInfo.shimmerLayout.hideShimmer()
@@ -64,12 +66,14 @@ class NowFragment : Fragment() {
         binding: FragmentNowBinding,
         temperature: String,
         humidity: String,
-        windSpeed: String
+        windSpeed: String,
+        temperatureFeelsLike: String
     ) {
         binding.weatherMainInfo.apply {
             tempInfo.text = temperature
             humidityInfo.text = humidity
             windSpeedInfo.text = windSpeed
+            tempFeelsInfo.text = temperatureFeelsLike
         }
     }
 

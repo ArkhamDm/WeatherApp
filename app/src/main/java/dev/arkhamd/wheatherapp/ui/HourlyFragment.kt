@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dev.arkhamd.data.model.WeatherInfo
+import dev.arkhamd.wheatherapp.R
 import dev.arkhamd.wheatherapp.databinding.FragmentHourlyBinding
+import dev.arkhamd.wheatherapp.databinding.WeatherItemRadioButtonBinding
 import dev.arkhamd.wheatherapp.ui.viewModel.WeatherResult
 import dev.arkhamd.wheatherapp.ui.viewModel.WeatherViewModel
 
@@ -68,7 +70,8 @@ class HourlyFragment : Fragment() {
             binding,
             temperature = weatherData[0].mainInfo.temp.toString(),
             humidity = weatherData[0].mainInfo.humidity.toString(),
-            windSpeed = weatherData[0].windInfo.speed.toInt().toString()
+            windSpeed = weatherData[0].windInfo.speed.toInt().toString(),
+            temperatureFeelsLike = weatherData[0].mainInfo.feelsLike.toString()
         )
 
         changeHourData(
@@ -86,12 +89,14 @@ class HourlyFragment : Fragment() {
         binding: FragmentHourlyBinding,
         temperature: String,
         humidity: String,
-        windSpeed: String
+        windSpeed: String,
+        temperatureFeelsLike: String
     ) {
         binding.weatherMainInfo.apply {
             tempInfo.text = temperature
             humidityInfo.text = humidity
             windSpeedInfo.text = windSpeed
+            tempFeelsInfo.text = temperatureFeelsLike
         }
     }
 
@@ -145,59 +150,93 @@ class HourlyFragment : Fragment() {
         weatherData: List<WeatherInfo>
     ) {
         binding.weatherHour1.fullLayout.setOnClickListener {
-            val weatherHourData = weatherData[0]
-            changeMainWeatherInfo(
-                binding,
-                temperature = weatherHourData.mainInfo.temp.toString(),
-                humidity = weatherHourData.mainInfo.humidity.toString(),
-                windSpeed = weatherHourData.windInfo.speed.toInt().toString()
-            )
-        }
-        binding.weatherHour2.fullLayout.setOnClickListener {
             val weatherHourData = weatherData[1]
             changeMainWeatherInfo(
                 binding,
                 temperature = weatherHourData.mainInfo.temp.toString(),
                 humidity = weatherHourData.mainInfo.humidity.toString(),
-                windSpeed = weatherHourData.windInfo.speed.toInt().toString()
+                windSpeed = weatherHourData.windInfo.speed.toInt().toString(),
+                temperatureFeelsLike = weatherHourData.mainInfo.feelsLike.toString()
             )
+
+            setChecked(binding, binding.weatherHour1)
         }
-        binding.weatherHour3.fullLayout.setOnClickListener {
+        binding.weatherHour2.fullLayout.setOnClickListener {
             val weatherHourData = weatherData[2]
             changeMainWeatherInfo(
                 binding,
                 temperature = weatherHourData.mainInfo.temp.toString(),
                 humidity = weatherHourData.mainInfo.humidity.toString(),
-                windSpeed = weatherHourData.windInfo.speed.toInt().toString()
+                windSpeed = weatherHourData.windInfo.speed.toInt().toString(),
+                temperatureFeelsLike = weatherHourData.mainInfo.feelsLike.toString()
             )
+
+            setChecked(binding, binding.weatherHour2)
         }
-        binding.weatherHour4.fullLayout.setOnClickListener {
+        binding.weatherHour3.fullLayout.setOnClickListener {
             val weatherHourData = weatherData[3]
             changeMainWeatherInfo(
                 binding,
                 temperature = weatherHourData.mainInfo.temp.toString(),
                 humidity = weatherHourData.mainInfo.humidity.toString(),
-                windSpeed = weatherHourData.windInfo.speed.toInt().toString()
+                windSpeed = weatherHourData.windInfo.speed.toInt().toString(),
+                temperatureFeelsLike = weatherHourData.mainInfo.feelsLike.toString()
             )
+
+            setChecked(binding, binding.weatherHour3)
         }
-        binding.weatherHour5.fullLayout.setOnClickListener {
+        binding.weatherHour4.fullLayout.setOnClickListener {
             val weatherHourData = weatherData[4]
             changeMainWeatherInfo(
                 binding,
                 temperature = weatherHourData.mainInfo.temp.toString(),
                 humidity = weatherHourData.mainInfo.humidity.toString(),
-                windSpeed = weatherHourData.windInfo.speed.toInt().toString()
+                windSpeed = weatherHourData.windInfo.speed.toInt().toString(),
+                temperatureFeelsLike = weatherHourData.mainInfo.feelsLike.toString()
             )
+
+            setChecked(binding, binding.weatherHour4)
         }
-        binding.weatherHour6.fullLayout.setOnClickListener {
+        binding.weatherHour5.fullLayout.setOnClickListener {
             val weatherHourData = weatherData[5]
             changeMainWeatherInfo(
                 binding,
                 temperature = weatherHourData.mainInfo.temp.toString(),
                 humidity = weatherHourData.mainInfo.humidity.toString(),
-                windSpeed = weatherHourData.windInfo.speed.toInt().toString()
+                windSpeed = weatherHourData.windInfo.speed.toInt().toString(),
+                temperatureFeelsLike = weatherHourData.mainInfo.feelsLike.toString()
             )
+
+            setChecked(binding, binding.weatherHour5)
         }
+        binding.weatherHour6.fullLayout.setOnClickListener {
+            val weatherHourData = weatherData[6]
+            changeMainWeatherInfo(
+                binding,
+                temperature = weatherHourData.mainInfo.temp.toString(),
+                humidity = weatherHourData.mainInfo.humidity.toString(),
+                windSpeed = weatherHourData.windInfo.speed.toInt().toString(),
+                temperatureFeelsLike = weatherHourData.mainInfo.feelsLike.toString()
+            )
+
+            setChecked(binding, binding.weatherHour6)
+        }
+    }
+
+    private fun setChecked(
+        fragmentHourlyBinding: FragmentHourlyBinding,
+        weatherItemBinding: WeatherItemRadioButtonBinding
+    ) {
+        fragmentHourlyBinding.apply {
+            weatherHour1.circleShapeImage.setImageResource(R.drawable.cirle_weather_item)
+            weatherHour2.circleShapeImage.setImageResource(R.drawable.cirle_weather_item)
+            weatherHour3.circleShapeImage.setImageResource(R.drawable.cirle_weather_item)
+            weatherHour4.circleShapeImage.setImageResource(R.drawable.cirle_weather_item)
+            weatherHour5.circleShapeImage.setImageResource(R.drawable.cirle_weather_item)
+            weatherHour6.circleShapeImage.setImageResource(R.drawable.cirle_weather_item)
+        }
+
+        weatherItemBinding.circleShapeImage.setImageResource(R.drawable.cirle_weather_item_selected)
     }
 
     companion object {

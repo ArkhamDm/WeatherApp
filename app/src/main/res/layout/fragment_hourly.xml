@@ -2,64 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:id="@+id/constraintLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     tools:context=".ui.HourlyFragment">
-
-    <RadioGroup
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/weather_main_info">
-
-        <include
-            android:id="@+id/weather_hour_1"
-            layout="@layout/weather_item_hourly"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="64dp" />
-
-        <include
-            android:id="@+id/weather_hour_2"
-            layout="@layout/weather_item_hourly"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
-
-        <include
-            android:id="@+id/weather_hour_3"
-            layout="@layout/weather_item_hourly"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="8dp" />
-
-        <include
-            android:id="@+id/weather_hour_4"
-            layout="@layout/weather_item_hourly"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
-        <include
-            android:id="@+id/weather_hour_5"
-            layout="@layout/weather_item_hourly"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
-
-        <include
-            android:id="@+id/weather_hour_6"
-            layout="@layout/weather_item_hourly"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
-    </RadioGroup>
 
     <include
         android:id="@+id/weather_main_info"
@@ -70,5 +16,77 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/weatherHour1"
+        layout="@layout/weather_item_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/weatherHour2"
+        app:layout_constraintTop_toBottomOf="@+id/weather_main_info" />
+
+    <include
+        android:id="@+id/weatherHour2"
+        layout="@layout/weather_item_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/weatherHour1" />
+
+    <include
+        android:id="@+id/weatherHour3"
+        layout="@layout/weather_item_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintStart_toStartOf="@+id/weatherHour2"
+        app:layout_constraintTop_toBottomOf="@+id/weatherHour2" />
+
+    <include
+        android:id="@+id/weatherHour4"
+        layout="@layout/weather_item_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="@+id/weatherHour3"
+        app:layout_constraintTop_toBottomOf="@+id/weatherHour3" />
+
+    <include
+        android:id="@+id/weatherHour5"
+        layout="@layout/weather_item_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="@+id/weatherHour2"
+        app:layout_constraintTop_toBottomOf="@+id/weatherHour4" />
+
+    <include
+        android:id="@+id/weatherHour6"
+        layout="@layout/weather_item_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/weatherHour1"
+        app:layout_constraintTop_toBottomOf="@+id/weatherHour5" />
+
+    <ImageView
+        android:id="@+id/cityImage"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="-16dp"
+        android:layout_marginBottom="8dp"
+        android:adjustViewBounds="true"
+        android:cropToPadding="false"
+        android:src="@drawable/panelki_round"
+        app:layout_constraintBottom_toTopOf="@+id/weatherHour6"
+        app:layout_constraintEnd_toStartOf="@+id/weatherHour2"
+        app:layout_constraintTop_toBottomOf="@+id/weatherHour1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -38,14 +38,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="12:00"
-            android:textSize="@dimen/text_small" />
+            android:textSize="@dimen/text_small_10sp" />
 
         <TextView
             android:id="@+id/discriptionText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Дождь"
-            android:textSize="@dimen/text_small" />
+            android:textSize="@dimen/text_small_10sp" />
     </LinearLayout>
 
 </LinearLayout>
