@@ -5,7 +5,9 @@ import android.util.Log
 import dev.arkhamd.data.model.WeatherInfo
 import dev.arkhamd.lib.GeocodingApi
 import dev.arkhamd.weaherdatabase.WeatherDatabase
-import dev.arkhamd.weaherdatabase.model.WeatherInfoDBO
+import dev.arkhamd.weaherdatabase.model.CityInfoDBO
+import dev.arkhamd.weaherdatabase.model.DayWeatherInfoDBO
+import dev.arkhamd.weaherdatabase.model.HourWeatherInfoDBO
 import dev.arkhamd.weatherapi.WeatherApi
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -17,58 +19,89 @@ class WeatherRepository @Inject constructor(
     private val weatherApi: WeatherApi,
     private val geocodingApi: GeocodingApi
 ) {
-    fun getWeather(city: String): Single<RequestResult<List<WeatherInfo>>> {
+    fun getWeather(city: String): Single<RequestResult<WeatherInfo>> {
         return getDataFromApi(city)
             .onErrorResumeNext(getDataFromDatabase())
     }
 
-    private fun getDataFromDatabase(): Single<RequestResult<List<WeatherInfo>>> {
-        return database.weatherInfoDao.getAll()
-            .flatMap { response ->
-                if (response.isNotEmpty()) {
-                    Single.just(RequestResult.DatabaseSuccess(response.map { it.toWeatherInfo() }))
-                } else {
-                    Single.just(RequestResult.Error())
-                }
+    private fun getDataFromDatabase(): Single<RequestResult<WeatherInfo>> {
+        return database.weatherInfoDao.getAllCityInfo()
+            .flatMap { cityInfoDBO ->
+                database.weatherInfoDao.getAllHourInfo()
+                    .flatMap { listHourInfoDBO ->
+                        database.weatherInfoDao.getAllDayInfo()
+                            .flatMap { listDayInfoDBO ->
+                                if (listDayInfoDBO.isNotEmpty()) {
+                                    val data = WeatherInfo(
+                                        cityInfoDBO.toCityInfo(),
+                                        listHourInfoDBO.map { it.toHourWeatherInfo() },
+                                        listDayInfoDBO.map { it.toDayWeatherInfo() }
+                                    )
+                                    Single.just(RequestResult.DatabaseSuccess(data))
+                                } else {
+                                    Single.just(RequestResult.Error())
+                                }
+
+                            }
+                    }
             }
             .doOnSuccess { data ->
-                Log.d(TAG, "get data from database ${data.data?.size}")
+                Log.d(TAG, "get data from database ${data.data?.hourWeatherInfo?.size ?: "error"}")
             }
-            .doOnError { it ->
+            .doOnError {
                 Log.d(TAG, "error database", it)
             }
     }
 
-    private fun getDataFromApi(city: String): Single<RequestResult<List<WeatherInfo>>> {
+    private fun getDataFromApi(city: String): Single<RequestResult<WeatherInfo>> {
         return geocodingApi.getCords(city)
             .timeout(5, TimeUnit.SECONDS)
             .flatMap { cords ->
                 weatherApi.getForecast(lat = cords[0].lat, lon = cords[0].lon)
                     .flatMap { response ->
                         if (response.weatherInfoDTO.isNotEmpty()) {
-                            val data = response.weatherInfoDTO.map { it.toWeatherInfo() }
+                            val data = WeatherInfo(
+                                cityInfo = response.cityInfoDTO.toCityInfo(),
+                                hourWeatherInfo = response.weatherInfoDTO.map { it.toHourWeatherInfo() },
+                                dayWeatherInfo = response.weatherInfoDTO.toDayWeatherInfo()
+                            )
                             Single.just(RequestResult.ApiSuccess(data))
                         } else {
                             Single.just(RequestResult.Error())
                         }
                     }
             }
-            .doOnSuccess {
-                if (!it.data.isNullOrEmpty()) {
+            .doOnSuccess { weather ->
+                if (weather.data?.hourWeatherInfo?.isNotEmpty() == true) {
+                    val cityInfo = weather.data.cityInfo
+                    val hourWeatherInfo = weather.data.hourWeatherInfo
+                    val dayWeatherInfo = weather.data.dayWeatherInfo
                     clearAndAddDataToDatabase(
-                        it.data.map { weatherInfo -> weatherInfo.toWeatherInfoDBO() }
+                        cityInfoDBO = cityInfo.toCityInfoDBO(),
+                        hourWeatherInfoDBO = hourWeatherInfo.map { it.toHourWeatherInfoDBO() },
+                        dayWeatherInfoDBO = dayWeatherInfo.map { it.toDayWeatherInfoDBO() }
                     ).subscribe()
                 }
 
-                Log.d(TAG, "get data from api ${it.data?.size}")
+                Log.d(TAG, "get data from api ${weather.data?.hourWeatherInfo?.size ?: "error"}")
             }
 
     }
 
-    private fun clearAndAddDataToDatabase(weatherInfo: List<WeatherInfoDBO>): Completable {
-        return database.weatherInfoDao.clear()
+    private fun clearAndAddDataToDatabase(
+        cityInfoDBO: CityInfoDBO,
+        hourWeatherInfoDBO: List<HourWeatherInfoDBO>,
+        dayWeatherInfoDBO: List<DayWeatherInfoDBO>
+    ): Completable {
+        return database.weatherInfoDao.clearAllInfo()
             .andThen(
-                database.weatherInfoDao.insert(weatherInfo)
+                database.weatherInfoDao.insertCityInfo(cityInfoDBO)
+            )
+            .andThen(
+                database.weatherInfoDao.insertHourInfo(hourWeatherInfoDBO)
+            )
+            .andThen(
+                database.weatherInfoDao.insertDayInfo(dayWeatherInfoDBO)
             )
             .doOnComplete {
                 Log.d(TAG, "cleared database and insert weatherInfo")

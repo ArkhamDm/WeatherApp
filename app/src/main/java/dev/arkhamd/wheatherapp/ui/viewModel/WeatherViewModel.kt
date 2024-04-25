@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.arkhamd.data.RequestResult
 import dev.arkhamd.data.WeatherRepository
 import dev.arkhamd.data.model.WeatherInfo
+import dev.arkhamd.wheatherapp.R
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -15,10 +16,10 @@ import javax.inject.Inject
 class WeatherViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository
 ): ViewModel() {
-    private val _weatherInfo: MutableLiveData<WeatherResult<List<WeatherInfo>>> by lazy {
-        MutableLiveData<WeatherResult<List<WeatherInfo>>>(WeatherResult.Loading())
+    private val _weatherInfo: MutableLiveData<WeatherResult<WeatherInfo>> by lazy {
+        MutableLiveData<WeatherResult<WeatherInfo>>(WeatherResult.Loading())
     }
-    val weatherInfo: LiveData<WeatherResult<List<WeatherInfo>>>
+    val weatherInfo: LiveData<WeatherResult<WeatherInfo>>
         get() = _weatherInfo
 
     fun update(city: String) {
@@ -28,12 +29,30 @@ class WeatherViewModel @Inject constructor(
             .subscribe { response ->
                 when (response) {
                     is RequestResult.DatabaseSuccess -> {
+                        for (hourInfo in response.data!!.hourWeatherInfo) {
+                            hourInfo.weatherCondition = translateConditions(hourInfo.weatherCondition)
+                            hourInfo.weatherConditionIconId = setCondIcon(hourInfo.weatherCondition)
+                        }
+                        for (dayInfo in response.data!!.dayWeatherInfo) {
+                            dayInfo.condMain = translateConditions(dayInfo.condMain)
+                            dayInfo.iconId = setCondIcon(dayInfo.condMain)
+                        }
+
                         _weatherInfo.postValue(
                             WeatherResult.Database(response.data!!)
                         )
                     }
 
                     is RequestResult.ApiSuccess -> {
+                        for (weatherInfo in response.data!!.hourWeatherInfo) {
+                            weatherInfo.weatherCondition = translateConditions(weatherInfo.weatherCondition)
+                            weatherInfo.weatherConditionIconId = setCondIcon(weatherInfo.weatherCondition)
+                        }
+                        for (dayInfo in response.data!!.dayWeatherInfo) {
+                            dayInfo.condMain = translateConditions(dayInfo.condMain)
+                            dayInfo.iconId = setCondIcon(dayInfo.condMain)
+                        }
+
                         _weatherInfo.postValue(
                             WeatherResult.Api(response.data!!)
                         )
@@ -46,6 +65,32 @@ class WeatherViewModel @Inject constructor(
                     }
                 }
             }
+    }
+
+    private fun translateConditions(condition: String): String {
+        return when (condition) {
+            "Thunderstorm" -> "Гроза"
+            "Drizzle" -> "Мелкий дождь"
+            "Rain" -> "Дождь"
+            "Snow" -> "Снег"
+            "Atmosphere" -> "Смог"
+            "Clear" -> "Ясно"
+            "Clouds" -> "Облачно"
+            else -> "Неизвестность"
+        }
+    }
+
+    private fun setCondIcon(condition: String): Int {
+        return when (condition) {
+            "Гроза" -> R.drawable.thunderstorm
+            "Мелкий дождь" -> R.drawable.drizzle
+            "Дождь" -> R.drawable.rain
+            "Снег" -> R.drawable.snow
+            "Туман" -> R.drawable.mist
+            "Ясно" -> R.drawable.sun
+            "Облачно" -> R.drawable.cloudy
+            else -> R.drawable.weather_warning
+        }
     }
 }
 

@@ -1,18 +1,7 @@
 package dev.arkhamd.data.model
 
 data class WeatherInfo(
-    val time: Long,
-    val mainInfo: MainInfo,
-    val weatherDescription: WeatherDescription,
-    val cloudInfo: CloudInfo,
-    val windInfo: WindInfo,
-    val visibility: Int,
-    val probOfPrecipitation: Float,
-    val rainInfo: RainInfo? = null,
-    val snowInfo: SnowInfo? = null,
-    val timeTxt: String,
+    val cityInfo: CityInfo,
+    val hourWeatherInfo: List<HourWeatherInfo>,
+    val dayWeatherInfo: List<DayWeatherInfo>
 )
-enum class PartOfDay {
-    DAY,
-    NIGHT
-}

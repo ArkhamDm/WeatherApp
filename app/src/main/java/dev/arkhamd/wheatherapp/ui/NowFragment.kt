@@ -29,29 +29,34 @@ class NowFragment : Fragment() {
                     if (weather.data != null) {
                         changeMainWeatherInfo(
                             binding,
-                            temperature = weather.data[0].mainInfo.temp.toString(),
-                            humidity = weather.data[0].mainInfo.humidity.toString(),
-                            windSpeed = weather.data[0].windInfo.speed.toInt().toString(),
-                            temperatureFeelsLike = weather.data[0].mainInfo.feelsLike.toString()
+                            iconId = weather.data.hourWeatherInfo[0].weatherConditionIconId,
+                            temperature = weather.data.hourWeatherInfo[0].temp,
+                            humidity = weather.data.hourWeatherInfo[0].humidity,
+                            windSpeed = weather.data.hourWeatherInfo[0].windSpeed,
+                            temperatureFeelsLike = weather.data.hourWeatherInfo[0].feelsLike
                         )
                     }
                     binding.weatherMainInfo.shimmerLayout.hideShimmer()
                 }
+
                 is WeatherResult.Database -> {
                     if (weather.data != null) {
                         changeMainWeatherInfo(
                             binding,
-                            temperature = weather.data[0].mainInfo.temp.toString(),
-                            humidity = weather.data[0].mainInfo.humidity.toString(),
-                            windSpeed = weather.data[0].windInfo.speed.toInt().toString(),
-                            temperatureFeelsLike = weather.data[0].mainInfo.feelsLike.toString()
+                            iconId = weather.data.hourWeatherInfo[0].weatherConditionIconId,
+                            temperature = weather.data.hourWeatherInfo[0].temp,
+                            humidity = weather.data.hourWeatherInfo[0].humidity,
+                            windSpeed = weather.data.hourWeatherInfo[0].windSpeed,
+                            temperatureFeelsLike = weather.data.hourWeatherInfo[0].feelsLike
                         )
                     }
                     binding.weatherMainInfo.shimmerLayout.hideShimmer()
                 }
+
                 is WeatherResult.Error -> {
 
                 }
+
                 is WeatherResult.Loading -> {
                     binding.weatherMainInfo.shimmerLayout.stopShimmer()
                 }
@@ -64,12 +69,14 @@ class NowFragment : Fragment() {
 
     private fun changeMainWeatherInfo(
         binding: FragmentNowBinding,
+        iconId: Int,
         temperature: String,
         humidity: String,
         windSpeed: String,
         temperatureFeelsLike: String
     ) {
         binding.weatherMainInfo.apply {
+            weatherIcon.setImageResource(iconId)
             tempInfo.text = temperature
             humidityInfo.text = humidity
             windSpeedInfo.text = windSpeed

@@ -10,4 +10,7 @@
     <string name="temperature">temperature</string>
     <string name="metres_in_second">м/с</string>
     <string name="celsiusMeasureType">℃</string>
+    <string name="mainInfoDayOfWeek">Неизвестность</string>
+    <string name="mainInfoDayAndMonth">16 Сентября</string>
+    <string name="mainInfoTime">66:66</string>
 </resources>

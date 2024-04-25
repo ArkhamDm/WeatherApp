@@ -17,7 +17,7 @@
             app:srcCompat="@drawable/cirle_weather_item" />
 
         <ImageView
-            android:id="@+id/weatherImage"
+            android:id="@+id/hourWeatherIcon"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_gravity="center"

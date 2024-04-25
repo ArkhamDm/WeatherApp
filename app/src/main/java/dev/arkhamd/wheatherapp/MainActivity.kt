@@ -12,6 +12,7 @@ import dev.arkhamd.wheatherapp.ui.viewModel.WeatherViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -22,26 +23,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
 
-        val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-
-        val currentMonth = SimpleDateFormat("MMMM", Locale.getDefault()).format(Date())
-        val currentDay = SimpleDateFormat("dd ", Locale.getDefault()).format(Date())
-
-        val currentDayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault()).format(Date())
-
-        binding.mainInfo.apply {
-            dayOfWeek.text = currentDayOfWeek.replaceFirstChar { it.uppercase() }
-            monthAndDay.text = currentDay + currentMonth.replaceFirstChar { it.uppercase() }
-            time.text = currentTime
-        }
-
-
         weatherViewModel.update(binding.cityText.text.toString())
 
         weatherViewModel.weatherInfo.observe(this) { weather ->
             if (weather is WeatherResult.Api) {
                 binding.weatherState.setImageResource(R.drawable.weather_real)
             }
+
+            if (weather.data != null) {
+                setTimeOfData(binding, weather.data.hourWeatherInfo[0].time)
+                binding.mainInfo.shimmerLayout.hideShimmer()
+            } else {
+                binding.mainInfo.shimmerLayout.startShimmer()
+            }
+
         }
 
         binding.bottomNavigationView.setupWithNavController(
@@ -50,5 +45,30 @@ class MainActivity : AppCompatActivity() {
         )
 
         setContentView(binding.root)
+    }
+
+    private fun setTimeOfData(
+        binding: ActivityMainBinding,
+        timestamp: Long
+    ) {
+        val dateFormatDayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault())
+        val dateFormatDayAndMonth = SimpleDateFormat("dd MMMM", Locale.getDefault())
+        val dateFormatTime = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+        dateFormatDayOfWeek.timeZone = TimeZone.getTimeZone("UTC")
+        dateFormatDayAndMonth.timeZone = TimeZone.getTimeZone("UTC")
+        dateFormatTime.timeZone = TimeZone.getTimeZone("UTC")
+
+        val date = Date(timestamp * 1000)
+
+        val dayOfWeekText = dateFormatDayOfWeek.format(date)
+        val dayAndMonthText = dateFormatDayAndMonth.format(date)
+        val timeText = dateFormatTime.format(date)
+
+        binding.mainInfo.apply {
+            dayOfWeek.text = dayOfWeekText.replaceFirstChar { it.uppercase() }
+            dayAndMonth.text = dayAndMonthText
+            time.text = timeText
+        }
     }
 }

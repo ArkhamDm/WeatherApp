@@ -1,119 +1,111 @@
 package dev.arkhamd.data
 
-import dev.arkhamd.data.model.CloudInfo
-import dev.arkhamd.data.model.MainInfo
-import dev.arkhamd.data.model.PartOfDay
-import dev.arkhamd.data.model.RainInfo
-import dev.arkhamd.data.model.SnowInfo
-import dev.arkhamd.data.model.WeatherDescription
-import dev.arkhamd.data.model.WeatherInfo
-import dev.arkhamd.data.model.WindInfo
-import dev.arkhamd.weaherdatabase.model.CloudInfoDBO
-import dev.arkhamd.weaherdatabase.model.MainInfoDBO
-import dev.arkhamd.weaherdatabase.model.RainInfoDBO
-import dev.arkhamd.weaherdatabase.model.SnowInfoDBO
-import dev.arkhamd.weaherdatabase.model.WeatherDescriptionDBO
-import dev.arkhamd.weaherdatabase.model.WeatherInfoDBO
-import dev.arkhamd.weaherdatabase.model.WindInfoDBO
+import dev.arkhamd.data.model.CityInfo
+import dev.arkhamd.data.model.DayWeatherInfo
+import dev.arkhamd.data.model.HourWeatherInfo
+import dev.arkhamd.weaherdatabase.model.CityInfoDBO
+import dev.arkhamd.weaherdatabase.model.DayWeatherInfoDBO
+import dev.arkhamd.weaherdatabase.model.HourWeatherInfoDBO
+import dev.arkhamd.weatherapi.model.CityInfoDTO
 import dev.arkhamd.weatherapi.model.WeatherInfoDTO
 
-fun WeatherInfoDTO.toWeatherInfo(): WeatherInfo {
-    return WeatherInfo(
+fun CityInfoDBO.toCityInfo(): CityInfo {
+    return CityInfo(
+        name, sunriseTime, sunsetTime
+    )
+}
+
+fun HourWeatherInfoDBO.toHourWeatherInfo() : HourWeatherInfo {
+    return HourWeatherInfo(
+        time, temp, feelsLike, humidity, windSpeed, weatherCondition, weatherConditionIconId, timeTxt
+    )
+}
+
+fun DayWeatherInfoDBO.toDayWeatherInfo(): DayWeatherInfo {
+    return DayWeatherInfo(
+        temp, iconId, condMain, humidity, windSpeed, time, timeTxt
+    )
+}
+
+fun CityInfoDTO.toCityInfo(): CityInfo {
+    return CityInfo(
+        name, sunriseTime, sunsetTime
+    )
+}
+
+fun WeatherInfoDTO.toHourWeatherInfo() : HourWeatherInfo {
+    return HourWeatherInfo(
         time = time,
-        mainInfo = MainInfo(
-            temp = mainInfoDTO.temp.toInt(),
-            feelsLike = mainInfoDTO.feelsLike.toInt(),
-            tempMin = mainInfoDTO.tempMin.toInt(),
-            tempMax = mainInfoDTO.tempMax.toInt(),
-            pressure = mainInfoDTO.pressure,
-            humidity = mainInfoDTO.humidity,
-        ),
-        weatherDescription = WeatherDescription(
-            condId = weatherDescriptionDTO[0].condId,
-            condMain = weatherDescriptionDTO[0].condMain,
-            description = weatherDescriptionDTO[0].description,
-        ),
-        cloudInfo = CloudInfo(
-            cloudiness = cloudInfoDTO.cloudiness
-        ),
-        windInfo = WindInfo(
-            speed = windInfoDTO.speed,
-            directionInDegrees = windInfoDTO.directionInDegrees,
-        ),
-        visibility = visibility,
-        probOfPrecipitation = probOfPrecipitation,
-        rainInfo = RainInfo(
-            threeHours = rainInfoDTO?.threeHours ?: 0f
-        ),
-        snowInfo = SnowInfo(
-            threeHours = snowInfoDTO?.threeHours ?: 0f
-        ),
+        temp = if (mainInfoDTO.temp.toInt() >= 0)
+                "+" + mainInfoDTO.temp.toInt().toString()
+            else
+                mainInfoDTO.temp.toInt().toString(),
+        humidity = mainInfoDTO.humidity.toString(),
+        weatherCondition = weatherDescriptionDTO[0].condMain,
+        weatherConditionIconId = 0,
+        feelsLike = if (mainInfoDTO.feelsLike.toInt() >= 0)
+                "+" + mainInfoDTO.feelsLike.toInt().toString()
+            else
+                mainInfoDTO.feelsLike.toInt().toString(),
+        windSpeed = windInfoDTO.speed.toInt().toString(),
         timeTxt = timeTxt
     )
 }
 
-fun WeatherInfoDBO.toWeatherInfo(): WeatherInfo {
-    return WeatherInfo(
+fun List<WeatherInfoDTO>.toDayWeatherInfo(): List<DayWeatherInfo> {
+    val dayList = emptyList<DayWeatherInfo>().toMutableList()
+    for (hourData in this) {
+        val hour = hourData.timeTxt.subSequence(11, 13)
+        if (hour == "12") dayList.add(hourData.toDayWeatherInfo())
+    }
+
+    return dayList
+}
+
+private fun WeatherInfoDTO.toDayWeatherInfo(): DayWeatherInfo {
+    return DayWeatherInfo(
+        temp = if (mainInfoDTO.temp.toInt() >= 0)
+            "+" + mainInfoDTO.temp.toInt().toString()
+        else
+            mainInfoDTO.temp.toInt().toString(),
+        humidity = mainInfoDTO.humidity.toString(),
+        condMain = weatherDescriptionDTO[0].condMain,
+        iconId = 0,
+        windSpeed = windInfoDTO.speed.toInt().toString(),
         time = time,
-        mainInfo = MainInfo(
-            temp = mainInfoDBO.temp,
-            feelsLike = mainInfoDBO.feelsLike,
-            tempMin = mainInfoDBO.tempMin,
-            tempMax = mainInfoDBO.tempMax,
-            pressure = mainInfoDBO.pressure,
-            humidity = mainInfoDBO.humidity,
-        ),
-        weatherDescription = WeatherDescription(
-            condId = weatherDescriptionDBO.condId,
-            condMain = weatherDescriptionDBO.condMain,
-            description = weatherDescriptionDBO.description,
-        ),
-        cloudInfo = CloudInfo(
-            cloudiness = cloudInfoDBO.cloudiness
-        ),
-        windInfo = WindInfo(
-            speed = windInfoDBO.speed.toFloat(),
-            directionInDegrees = windInfoDBO.directionInDegrees,
-        ),
-        visibility = visibility,
-        probOfPrecipitation = probOfPrecipitation,
-        rainInfo = if (rainInfoDBO == null) null else
-            RainInfo(threeHours =  rainInfoDBO!!.threeHours),
-        snowInfo = if (snowInfoDBO == null) null else
-            SnowInfo(threeHours = snowInfoDBO!!.threeHours),
         timeTxt = timeTxt
     )
 }
 
-fun WeatherInfo.toWeatherInfoDBO(): WeatherInfoDBO {
-    return WeatherInfoDBO(
+fun CityInfo.toCityInfoDBO(): CityInfoDBO {
+    return CityInfoDBO(
+        name = name,
+        sunriseTime = sunriseTime,
+        sunsetTime = sunsetTime
+    )
+}
+
+fun HourWeatherInfo.toHourWeatherInfoDBO() : HourWeatherInfoDBO {
+    return HourWeatherInfoDBO(
         time = time,
-        mainInfoDBO = MainInfoDBO(
-            temp = mainInfo.temp,
-            feelsLike = mainInfo.feelsLike,
-            tempMin = mainInfo.tempMin,
-            tempMax = mainInfo.tempMax,
-            pressure = mainInfo.pressure,
-            humidity = mainInfo.humidity,
-        ),
-        weatherDescriptionDBO = WeatherDescriptionDBO(
-            condId = weatherDescription.condId,
-            condMain = weatherDescription.condMain,
-            description = weatherDescription.description
-        ),
-        cloudInfoDBO = CloudInfoDBO(
-            cloudiness = cloudInfo.cloudiness
-        ),
-        windInfoDBO = WindInfoDBO(
-            speed = windInfo.speed.toInt(),
-            directionInDegrees = windInfo.directionInDegrees
-        ),
-        visibility = visibility,
-        probOfPrecipitation = probOfPrecipitation,
-        rainInfoDBO = if (rainInfo == null) null else
-            RainInfoDBO(threeHours = rainInfo.threeHours),
-        snowInfoDBO = if (snowInfo == null) null else
-            SnowInfoDBO(threeHours = snowInfo.threeHours),
+        timeTxt = timeTxt,
+        temp = temp,
+        feelsLike = feelsLike,
+        humidity = humidity,
+        windSpeed = windSpeed,
+        weatherCondition = weatherCondition,
+        weatherConditionIconId = 0
+    )
+}
+
+fun DayWeatherInfo.toDayWeatherInfoDBO(): DayWeatherInfoDBO {
+    return DayWeatherInfoDBO(
+        temp = temp,
+        humidity = humidity,
+        windSpeed = windSpeed,
+        condMain = condMain,
+        iconId = 0,
+        time = time,
         timeTxt = timeTxt
     )
 }
