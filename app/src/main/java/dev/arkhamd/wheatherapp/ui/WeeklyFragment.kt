@@ -127,10 +127,10 @@ class WeeklyFragment : Fragment() {
     }
 
     private fun getWeekDay(timestamp: Long): String {
-        val dateFormatDayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault())
+        val dateFormatDayOfWeek = SimpleDateFormat("EE", Locale.getDefault())
         val date = Date(timestamp * 1000)
 
-        return dateFormatDayOfWeek.format(date)
+        return dateFormatDayOfWeek.format(date).uppercase()
     }
 
     private fun getDate(timestamp: Long): String {

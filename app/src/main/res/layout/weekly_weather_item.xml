@@ -126,6 +126,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:paddingBottom="6dp"
                     android:text="26.05"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_small_10sp" />
@@ -135,9 +136,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Воскресение"
+                    android:text="ВС"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_extra_small_6sp" />
+                    android:textSize="@dimen/text_normal_14sp" />
             </LinearLayout>
 
         </LinearLayout>
