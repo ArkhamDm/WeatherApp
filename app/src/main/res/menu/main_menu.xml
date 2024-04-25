@@ -11,6 +11,6 @@
     <item
         android:id="@+id/weeklyFragment"
         android:icon="@drawable/bottom_nav_selector"
-        android:title="@string/weekly" />
+        android:title="@string/daily" />
 
 </menu>

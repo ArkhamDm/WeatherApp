@@ -4,7 +4,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="now">Сейчас</string>
     <string name="hourly">Часы</string>
-    <string name="weekly">Недели</string>
+    <string name="daily">Дни</string>
     <string name="humidity">humidity</string>
     <string name="wind_speed">wind-speed</string>
     <string name="temperature">temperature</string>
