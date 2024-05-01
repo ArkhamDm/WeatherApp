@@ -1,6 +1,9 @@
 package dev.arkhamd.wheatherapp.ui
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
@@ -24,9 +27,14 @@ class WeatherActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityWeatherBinding.inflate(layoutInflater)
 
-        val cords = intent.getFloatArrayExtra("cords")!!
-        weatherViewModel.update(latitude =  cords[0], longitude =  cords[1])
+        var cords = intent.getFloatArrayExtra("cords")
+        if (cords == null) {
+            Toast.makeText(baseContext, "Нет данных о геопозиции", Toast.LENGTH_SHORT).show()
+            cords = floatArrayOf(55.065304f, 60.108337f)
+        }
+        saveCords(cords[0], cords[1])
 
+        weatherViewModel.update(latitude =  cords[0], longitude =  cords[1])
         weatherViewModel.weatherInfo.observe(this) { weather ->
             if (weather is WeatherResult.Api) {
                 binding.weatherState.setImageResource(R.drawable.weather_real)
@@ -40,6 +48,12 @@ class WeatherActivity : AppCompatActivity() {
                 binding.mainInfo.shimmerLayout.startShimmer()
             }
 
+        }
+
+        binding.cityLayout.setOnClickListener {
+            val intent = Intent(baseContext, MapActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
         }
 
         binding.bottomNavigationView.setupWithNavController(
@@ -73,5 +87,16 @@ class WeatherActivity : AppCompatActivity() {
             dayAndMonth.text = dayAndMonthText
             time.text = timeText
         }
+    }
+
+    private fun saveCords(latitude: Float, longitude: Float) {
+        val sharedPreferences =
+            baseContext.getSharedPreferences("cords_prefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        editor.putFloat("lat", latitude)
+        editor.putFloat("lon", longitude)
+
+        editor.apply()
     }
 }
