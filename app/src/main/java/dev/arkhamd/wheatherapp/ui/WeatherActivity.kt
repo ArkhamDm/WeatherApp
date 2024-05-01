@@ -1,4 +1,4 @@
-package dev.arkhamd.wheatherapp
+package dev.arkhamd.wheatherapp.ui
 
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -6,24 +6,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dev.arkhamd.wheatherapp.databinding.ActivityMainBinding
-import dev.arkhamd.wheatherapp.ui.viewModel.WeatherResult
-import dev.arkhamd.wheatherapp.ui.viewModel.WeatherViewModel
+import dev.arkhamd.wheatherapp.R
+import dev.arkhamd.wheatherapp.databinding.ActivityWeatherBinding
+import dev.arkhamd.wheatherapp.ui.weather.viewModel.WeatherResult
+import dev.arkhamd.wheatherapp.ui.weather.viewModel.WeatherViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class WeatherActivity : AppCompatActivity() {
     private val weatherViewModel: WeatherViewModel by viewModels()
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityWeatherBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityWeatherBinding.inflate(layoutInflater)
 
-        weatherViewModel.update(binding.cityText.text.toString())
+        val cords = intent.getFloatArrayExtra("cords")!!
+        weatherViewModel.update(latitude =  cords[0], longitude =  cords[1])
 
         weatherViewModel.weatherInfo.observe(this) { weather ->
             if (weather is WeatherResult.Api) {
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (weather.data != null) {
+                binding.cityText.text = weather.data.cityInfo.name.replace(' ', '\n')
                 setTimeOfData(binding, weather.data.hourWeatherInfo[0].time)
                 binding.mainInfo.shimmerLayout.hideShimmer()
             } else {
@@ -48,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setTimeOfData(
-        binding: ActivityMainBinding,
+        binding: ActivityWeatherBinding,
         timestamp: Long
     ) {
         val dateFormatDayOfWeek = SimpleDateFormat("EEEE", Locale.getDefault())

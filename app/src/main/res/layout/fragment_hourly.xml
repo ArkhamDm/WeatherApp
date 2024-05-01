@@ -5,7 +5,7 @@
     android:id="@+id/constraintLayout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    tools:context=".ui.HourlyFragment">
+    tools:context=".ui.weather.HourlyFragment">
 
     <include
         android:id="@+id/weather_main_info"

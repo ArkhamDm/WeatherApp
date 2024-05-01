@@ -5,7 +5,7 @@
     android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.NowFragment">
+    tools:context=".ui.weather.NowFragment">
 
     <include
         android:id="@+id/weather_main_info"

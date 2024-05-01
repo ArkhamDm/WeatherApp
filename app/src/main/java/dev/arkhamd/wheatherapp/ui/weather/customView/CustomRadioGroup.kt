@@ -1,4 +1,4 @@
-package dev.arkhamd.wheatherapp.ui.customView
+package dev.arkhamd.wheatherapp.ui.weather.customView
 
 import android.content.Context
 import android.util.AttributeSet

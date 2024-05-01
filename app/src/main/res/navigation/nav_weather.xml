@@ -7,17 +7,17 @@
 
     <fragment
         android:id="@+id/nowFragment"
-        android:name="dev.arkhamd.wheatherapp.ui.NowFragment"
+        android:name="dev.arkhamd.wheatherapp.ui.weather.NowFragment"
         android:label="fragment_now"
         tools:layout="@layout/fragment_now" />
     <fragment
         android:id="@+id/hourlyFragment"
-        android:name="dev.arkhamd.wheatherapp.ui.HourlyFragment"
+        android:name="dev.arkhamd.wheatherapp.ui.weather.HourlyFragment"
         android:label="fragment_hourly"
         tools:layout="@layout/fragment_hourly" />
     <fragment
         android:id="@+id/weeklyFragment"
-        android:name="dev.arkhamd.wheatherapp.ui.WeeklyFragment"
+        android:name="dev.arkhamd.wheatherapp.ui.weather.WeeklyFragment"
         android:label="fragment_weekly"
         tools:layout="@layout/fragment_weekly" />
 </navigation>

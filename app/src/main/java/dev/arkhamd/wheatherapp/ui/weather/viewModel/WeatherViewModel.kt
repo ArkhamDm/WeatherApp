@@ -1,4 +1,4 @@
-package dev.arkhamd.wheatherapp.ui.viewModel
+package dev.arkhamd.wheatherapp.ui.weather.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -22,8 +22,8 @@ class WeatherViewModel @Inject constructor(
     val weatherInfo: LiveData<WeatherResult<WeatherInfo>>
         get() = _weatherInfo
 
-    fun update(city: String) {
-        val disposable = weatherRepository.getWeather(city)
+    fun update(latitude: Float, longitude: Float) {
+        val disposable = weatherRepository.getWeather(latitude, longitude)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { response ->

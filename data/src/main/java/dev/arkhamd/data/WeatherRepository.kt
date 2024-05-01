@@ -19,8 +19,8 @@ class WeatherRepository @Inject constructor(
     private val weatherApi: WeatherApi,
     private val geocodingApi: GeocodingApi
 ) {
-    fun getWeather(city: String): Single<RequestResult<WeatherInfo>> {
-        return getDataFromApi(city)
+    fun getWeather(latitude: Float, longitude: Float): Single<RequestResult<WeatherInfo>> {
+        return getDataFromApi(latitude, longitude)
             .onErrorResumeNext(getDataFromDatabase())
     }
 
@@ -53,7 +53,39 @@ class WeatherRepository @Inject constructor(
             }
     }
 
-    private fun getDataFromApi(city: String): Single<RequestResult<WeatherInfo>> {
+    private fun getDataFromApi(latitude: Float, longitude: Float): Single<RequestResult<WeatherInfo>> {
+        return weatherApi.getForecast(lat = latitude, lon = longitude)
+            .timeout(5, TimeUnit.SECONDS)
+            .flatMap { response ->
+                if (response.weatherInfoDTO.isNotEmpty()) {
+                    val data = WeatherInfo(
+                        cityInfo = response.cityInfoDTO.toCityInfo(),
+                        hourWeatherInfo = response.weatherInfoDTO.map { it.toHourWeatherInfo() },
+                        dayWeatherInfo = response.weatherInfoDTO.toDayWeatherInfo()
+                    )
+                    Single.just(RequestResult.ApiSuccess(data))
+                } else {
+                    Single.just(RequestResult.Error())
+                }
+            }
+            .doOnSuccess { weather ->
+                if (weather.data?.hourWeatherInfo?.isNotEmpty() == true) {
+                    val cityInfo = weather.data.cityInfo
+                    val hourWeatherInfo = weather.data.hourWeatherInfo
+                    val dayWeatherInfo = weather.data.dayWeatherInfo
+                    clearAndAddDataToDatabase(
+                        cityInfoDBO = cityInfo.toCityInfoDBO(),
+                        hourWeatherInfoDBO = hourWeatherInfo.map { it.toHourWeatherInfoDBO() },
+                        dayWeatherInfoDBO = dayWeatherInfo.map { it.toDayWeatherInfoDBO() }
+                    ).subscribe()
+                }
+
+                Log.d(TAG, "get data from api ${weather.data?.hourWeatherInfo?.size ?: "error"}")
+            }
+
+    }
+
+    /*private fun getDataFromApi(city: String): Single<RequestResult<WeatherInfo>> {
         return geocodingApi.getCords(city)
             .timeout(5, TimeUnit.SECONDS)
             .flatMap { cords ->
@@ -86,7 +118,7 @@ class WeatherRepository @Inject constructor(
                 Log.d(TAG, "get data from api ${weather.data?.hourWeatherInfo?.size ?: "error"}")
             }
 
-    }
+    }*/
 
     private fun clearAndAddDataToDatabase(
         cityInfoDBO: CityInfoDBO,

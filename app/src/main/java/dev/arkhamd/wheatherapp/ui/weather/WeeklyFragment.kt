@@ -1,4 +1,4 @@
-package dev.arkhamd.wheatherapp.ui
+package dev.arkhamd.wheatherapp.ui.weather
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,8 +9,8 @@ import androidx.fragment.app.activityViewModels
 import dev.arkhamd.data.model.DayWeatherInfo
 import dev.arkhamd.wheatherapp.R
 import dev.arkhamd.wheatherapp.databinding.FragmentWeeklyBinding
-import dev.arkhamd.wheatherapp.ui.viewModel.WeatherResult
-import dev.arkhamd.wheatherapp.ui.viewModel.WeatherViewModel
+import dev.arkhamd.wheatherapp.ui.weather.viewModel.WeatherResult
+import dev.arkhamd.wheatherapp.ui.weather.viewModel.WeatherViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

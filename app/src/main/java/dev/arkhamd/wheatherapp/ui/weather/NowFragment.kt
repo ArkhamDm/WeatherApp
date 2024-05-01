@@ -1,4 +1,4 @@
-package dev.arkhamd.wheatherapp.ui
+package dev.arkhamd.wheatherapp.ui.weather
 
 import android.content.ContentValues.TAG
 import android.os.Bundle
@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dev.arkhamd.wheatherapp.databinding.FragmentNowBinding
-import dev.arkhamd.wheatherapp.ui.viewModel.WeatherResult
-import dev.arkhamd.wheatherapp.ui.viewModel.WeatherViewModel
+import dev.arkhamd.wheatherapp.ui.weather.viewModel.WeatherResult
+import dev.arkhamd.wheatherapp.ui.weather.viewModel.WeatherViewModel
 
 class NowFragment : Fragment() {
     private val weatherViewModel: WeatherViewModel by activityViewModels()

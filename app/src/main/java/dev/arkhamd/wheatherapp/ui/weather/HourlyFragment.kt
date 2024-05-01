@@ -1,4 +1,4 @@
-package dev.arkhamd.wheatherapp.ui
+package dev.arkhamd.wheatherapp.ui.weather
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,8 +10,8 @@ import dev.arkhamd.data.model.HourWeatherInfo
 import dev.arkhamd.wheatherapp.R
 import dev.arkhamd.wheatherapp.databinding.FragmentHourlyBinding
 import dev.arkhamd.wheatherapp.databinding.WeatherItemRadioButtonBinding
-import dev.arkhamd.wheatherapp.ui.viewModel.WeatherResult
-import dev.arkhamd.wheatherapp.ui.viewModel.WeatherViewModel
+import dev.arkhamd.wheatherapp.ui.weather.viewModel.WeatherResult
+import dev.arkhamd.wheatherapp.ui.weather.viewModel.WeatherViewModel
 
 class HourlyFragment : Fragment() {
     private val weatherViewModel: WeatherViewModel by activityViewModels()
