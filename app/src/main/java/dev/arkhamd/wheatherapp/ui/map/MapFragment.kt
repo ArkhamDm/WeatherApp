@@ -26,7 +26,6 @@ import dev.arkhamd.wheatherapp.ui.map.dialog.MapOnSelectSpotDialog
 class MapFragment : Fragment() {
     private lateinit var binding: FragmentMapBinding
     private lateinit var map: Map
-    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val geoObjectTapListener = GeoObjectTapListener {
@@ -63,14 +62,8 @@ class MapFragment : Fragment() {
                 if (isGranted) {
                     fusedLocationClient.lastLocation
                         .addOnSuccessListener { location ->
-                            // Получение последнего известного местоположения
                             if (location != null) {
-                                START_POSITION = CameraPosition(
-                                    Point(location.latitude, location.longitude),
-                                    8f,
-                                    0f,
-                                    30f
-                                )
+                                moveMap(location.latitude, location.longitude, map)
                             }
                         }
                         .addOnFailureListener { _ ->
@@ -78,8 +71,6 @@ class MapFragment : Fragment() {
                         }
                 }
             }
-
-
 
         when {
             ContextCompat.checkSelfPermission(
@@ -89,12 +80,7 @@ class MapFragment : Fragment() {
                 fusedLocationClient.lastLocation
                     .addOnSuccessListener { location ->
                         if (location != null) {
-                            START_POSITION = CameraPosition(
-                                Point(location.latitude, location.longitude),
-                                8f,
-                                0f,
-                                30f
-                            )
+                            moveMap(location.latitude, location.longitude, map)
                         }
                     }
                     .addOnFailureListener { _ ->
@@ -109,12 +95,20 @@ class MapFragment : Fragment() {
         }
 
         map = binding.yandexMap.mapWindow.map
-        map.move(
-            START_POSITION, START_ANIMATION, null
-        )
+        map.move(START_POSITION, START_ANIMATION, null)
         map.addTapListener(geoObjectTapListener)
 
         return binding.root
+    }
+
+    private fun moveMap(lat: Double, lon: Double, map: Map) {
+        val position = CameraPosition(
+            Point(lat, lon),
+            13f,
+            0f,
+            30f
+        )
+        map.move(position, START_ANIMATION, null)
     }
 
     override fun onStart() {
@@ -133,9 +127,9 @@ class MapFragment : Fragment() {
         private val START_ANIMATION = Animation(Animation.Type.LINEAR, 1f)
         private val SMOOTH_ANIMATION = Animation(Animation.Type.SMOOTH, 0.4f)
 
-        private var START_POSITION = CameraPosition(
-            Point(59.938732, 30.316229),
-            8f,
+        private val START_POSITION = CameraPosition(
+            Point(55.065304, 60.108337),
+            14f,
             0f,
             30f
         )
