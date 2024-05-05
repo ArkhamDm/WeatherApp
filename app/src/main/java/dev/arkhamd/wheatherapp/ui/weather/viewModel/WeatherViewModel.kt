@@ -1,9 +1,11 @@
 package dev.arkhamd.wheatherapp.ui.weather.viewModel
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.arkhamd.data.RequestResult
 import dev.arkhamd.data.WeatherRepository
 import dev.arkhamd.data.model.WeatherInfo
@@ -14,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
-    private val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository,
+    @ApplicationContext private val applicationContext: Context
 ): ViewModel() {
     private val _weatherInfo: MutableLiveData<WeatherResult<WeatherInfo>> by lazy {
         MutableLiveData<WeatherResult<WeatherInfo>>(WeatherResult.Loading())
@@ -69,29 +72,30 @@ class WeatherViewModel @Inject constructor(
 
     private fun translateConditions(condition: String): String {
         return when (condition) {
-            "Thunderstorm" -> "Гроза"
-            "Drizzle" -> "Мелкий дождь"
-            "Rain" -> "Дождь"
-            "Snow" -> "Снег"
-            "Atmosphere" -> "Смог"
-            "Clear" -> "Ясно"
-            "Clouds" -> "Облачно"
-            else -> "Неизвестность"
+            "Thunderstorm" -> applicationContext.getString(R.string.thunderstorm)
+            "Drizzle" -> applicationContext.getString(R.string.drizzle)
+            "Rain" -> applicationContext.getString(R.string.rain)
+            "Snow" -> applicationContext.getString(R.string.snow)
+            "Atmosphere" -> applicationContext.getString(R.string.atmosphere)
+            "Clear" -> applicationContext.getString(R.string.clear)
+            "Clouds" -> applicationContext.getString(R.string.clouds)
+            else -> applicationContext.getString(R.string.undefined)
         }
     }
 
     private fun setCondIcon(condition: String): Int {
         return when (condition) {
-            "Гроза" -> R.drawable.thunderstorm
-            "Мелкий дождь" -> R.drawable.drizzle
-            "Дождь" -> R.drawable.rain
-            "Снег" -> R.drawable.snow
-            "Туман" -> R.drawable.mist
-            "Ясно" -> R.drawable.sun
-            "Облачно" -> R.drawable.cloudy
+            applicationContext.getString(R.string.thunderstorm) -> R.drawable.thunderstorm
+            applicationContext.getString(R.string.drizzle) -> R.drawable.drizzle
+            applicationContext.getString(R.string.rain) -> R.drawable.rain
+            applicationContext.getString(R.string.snow) -> R.drawable.snow
+            applicationContext.getString(R.string.atmosphere) -> R.drawable.mist
+            applicationContext.getString(R.string.clear) -> R.drawable.sun
+            applicationContext.getString(R.string.clouds) -> R.drawable.cloudy
             else -> R.drawable.weather_warning
         }
     }
+
 }
 
 sealed class WeatherResult<E>(val data: E?) {

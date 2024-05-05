@@ -1,6 +1,7 @@
 package dev.arkhamd.wheatherapp.ui.weather
 
 import android.content.ContentValues.TAG
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import dev.arkhamd.wheatherapp.R
 import dev.arkhamd.wheatherapp.databinding.FragmentNowBinding
 import dev.arkhamd.wheatherapp.ui.weather.viewModel.WeatherResult
 import dev.arkhamd.wheatherapp.ui.weather.viewModel.WeatherViewModel
@@ -35,6 +37,7 @@ class NowFragment : Fragment() {
                             windSpeed = weather.data.hourWeatherInfo[0].windSpeed,
                             temperatureFeelsLike = weather.data.hourWeatherInfo[0].feelsLike
                         )
+                        setLottiAnim(binding, weather.data.hourWeatherInfo[0].weatherCondition)
                     }
                     binding.weatherMainInfo.shimmerLayout.hideShimmer()
                 }
@@ -49,6 +52,7 @@ class NowFragment : Fragment() {
                             windSpeed = weather.data.hourWeatherInfo[0].windSpeed,
                             temperatureFeelsLike = weather.data.hourWeatherInfo[0].feelsLike
                         )
+                        setLottiAnim(binding, weather.data.hourWeatherInfo[0].weatherCondition)
                     }
                     binding.weatherMainInfo.shimmerLayout.hideShimmer()
                 }
@@ -81,6 +85,23 @@ class NowFragment : Fragment() {
             humidityInfo.text = humidity
             windSpeedInfo.text = windSpeed
             tempFeelsInfo.text = temperatureFeelsLike
+        }
+    }
+
+    private fun setLottiAnim(
+        binding: FragmentNowBinding,
+        weatherDescription: String
+    ) {
+        when (weatherDescription) {
+            getString(R.string.rain) -> {
+                binding.imageView.setColorFilter(Color.argb(48, 0, 0, 0))
+                binding.lottieAnimationView
+                    .setAnimationFromUrl("https://lottie.host/85864202-c1bf-454b-8e26-6491e79bfbcb/8QNz6W1a9G.json")
+            }
+            getString(R.string.snow) -> {
+                binding.lottieAnimationView
+                    .setAnimationFromUrl("https://lottie.host/632e3e6e-d433-4ab1-8c35-0e7d070f449c/MYtPmfSTAM.json")
+            }
         }
     }
 

@@ -13,4 +13,12 @@
     <string name="mainInfoDayOfWeek">Неизвестность</string>
     <string name="mainInfoDayAndMonth">16 Сентября</string>
     <string name="mainInfoTime">66:66</string>
+    <string name="thunderstorm">Гроза</string>
+    <string name="drizzle">Мелкий дождь</string>
+    <string name="rain">Дождь</string>
+    <string name="snow">Снег</string>
+    <string name="atmosphere">Смог</string>
+    <string name="clear">Ясно</string>
+    <string name="clouds">Облачно</string>
+    <string name="undefined">Неизвестность</string>
 </resources>
