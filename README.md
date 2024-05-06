@@ -1,6 +1,6 @@
 # WeaherApp  
 Welcome everyone!
-It`s pixel-style weather app.
+It`s pixel-style weather app.  
 ![video_2024-05-06_23-11-43-ezgif com-video-to-gif-converter](https://github.com/ArkhamDm/WeatherApp/assets/114360233/8d4aea11-d751-40dc-a0b6-64569fbaaa7e)  
 
 # Used Technologies
