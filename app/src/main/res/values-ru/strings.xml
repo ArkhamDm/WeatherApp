@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="now">Сейчас</string>
+    <string name="hourly">Часы</string>
+    <string name="daily">Дни</string>
+    <string name="metres_in_second">м/с</string>
+    <string name="mainInfoDayOfWeek">Неизвестность</string>
+    <string name="mainInfoDayAndMonth">16 Сентября</string>
+    <string name="thunderstorm">Гроза</string>
+    <string name="drizzle">Мелкий дождь</string>
+    <string name="rain">Дождь</string>
+    <string name="snow">Снег</string>
+    <string name="atmosphere">Смог</string>
+    <string name="clear">Ясно</string>
+    <string name="clouds">Облачно</string>
+    <string name="successfully">Успешно!</string>
+    <string name="error_get_weather">Ошибка в получении данных</string>
+    <string name="error_get_geo">Нет данных о геолокации</string>
+    <string name="humidity">Влажность</string>
+    <string name="wind_speed">Скорость ветра</string>
+    <string name="temperature">Темература</string>
+</resources>

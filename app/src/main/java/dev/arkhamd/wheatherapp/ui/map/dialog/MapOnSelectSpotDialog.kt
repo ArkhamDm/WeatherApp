@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import dev.arkhamd.wheatherapp.ui.WeatherActivity
@@ -27,8 +26,6 @@ class MapOnSelectSpotDialog: DialogFragment() {
 
         val builder = AlertDialog.Builder(requireActivity())
 
-        Toast.makeText(requireContext(), data!!.joinToString(" "), Toast.LENGTH_SHORT).show()
-
         builder
             .setTitle("Выбор места")
             .setMessage("Вы уверены?")
@@ -43,7 +40,7 @@ class MapOnSelectSpotDialog: DialogFragment() {
 
         val alertDialog = builder.create()
 
-        // Установка параметров для отображения диалога внизу экрана
+        // window to bottom of screen
         val window = alertDialog.window
         val layoutParams = window?.attributes
         layoutParams?.gravity = Gravity.BOTTOM

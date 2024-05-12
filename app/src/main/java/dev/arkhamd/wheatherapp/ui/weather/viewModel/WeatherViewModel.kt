@@ -26,6 +26,8 @@ class WeatherViewModel @Inject constructor(
         get() = _weatherInfo
 
     fun update(latitude: Float, longitude: Float) {
+        setLoading()
+
         val disposable = weatherRepository.getWeather(latitude, longitude)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -70,6 +72,10 @@ class WeatherViewModel @Inject constructor(
             }
     }
 
+    private fun setLoading() {
+        _weatherInfo.value = WeatherResult.Loading()
+    }
+
     private fun translateConditions(condition: String): String {
         return when (condition) {
             "Thunderstorm" -> applicationContext.getString(R.string.thunderstorm)
@@ -79,7 +85,7 @@ class WeatherViewModel @Inject constructor(
             "Atmosphere" -> applicationContext.getString(R.string.atmosphere)
             "Clear" -> applicationContext.getString(R.string.clear)
             "Clouds" -> applicationContext.getString(R.string.clouds)
-            else -> applicationContext.getString(R.string.undefined)
+            else -> applicationContext.getString(R.string.mainInfoDayOfWeek)
         }
     }
 

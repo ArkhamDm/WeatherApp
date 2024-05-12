@@ -27,11 +27,7 @@ class WeatherActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityWeatherBinding.inflate(layoutInflater)
 
-        var cords = intent.getFloatArrayExtra("cords")
-        if (cords == null) {
-            Toast.makeText(baseContext, "Нет данных о геопозиции", Toast.LENGTH_SHORT).show()
-            cords = floatArrayOf(55.065304f, 60.108337f)
-        }
+        val cords = loadCords()
         saveCords(cords[0], cords[1])
 
         weatherViewModel.update(latitude =  cords[0], longitude =  cords[1])
@@ -54,6 +50,22 @@ class WeatherActivity : AppCompatActivity() {
             val intent = Intent(baseContext, MapActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
+        }
+
+        binding.swipeRefresh.setOnRefreshListener {
+            weatherViewModel.update(latitude = cords[0], longitude = cords[1])
+
+            weatherViewModel.weatherInfo.observe(this) { weather ->
+                if (weather is WeatherResult.Api) {
+                    Toast.makeText(this, getString(R.string.successfully), Toast.LENGTH_SHORT).show()
+                    binding.swipeRefresh.isRefreshing = false
+                }
+                else if ((weather is WeatherResult.Error) or (weather is WeatherResult.Database) ) {
+                    Toast.makeText(this, getString(R.string.error_get_weather), Toast.LENGTH_SHORT).show()
+                    binding.swipeRefresh.isRefreshing = false
+                }
+            }
+
         }
 
         binding.bottomNavigationView.setupWithNavController(
@@ -98,5 +110,11 @@ class WeatherActivity : AppCompatActivity() {
         editor.putFloat("lon", longitude)
 
         editor.apply()
+    }
+
+    private fun loadCords(): FloatArray {
+        return intent.getFloatArrayExtra("cords") ?: floatArrayOf(55.065304f, 60.108337f).also {
+            Toast.makeText(baseContext, getString(R.string.error_get_geo), Toast.LENGTH_SHORT).show()
+        }
     }
 }

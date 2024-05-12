@@ -1,24 +1,25 @@
 <resources>
-    <string name="app_name">WeatherApp</string>
+    <string name="app_name" translatable="false">WeatherApp</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="now">Сейчас</string>
-    <string name="hourly">Часы</string>
-    <string name="daily">Дни</string>
-    <string name="humidity">humidity</string>
-    <string name="wind_speed">wind-speed</string>
-    <string name="temperature">temperature</string>
-    <string name="metres_in_second">м/с</string>
-    <string name="celsiusMeasureType">℃</string>
-    <string name="mainInfoDayOfWeek">Неизвестность</string>
-    <string name="mainInfoDayAndMonth">16 Сентября</string>
-    <string name="mainInfoTime">66:66</string>
-    <string name="thunderstorm">Гроза</string>
-    <string name="drizzle">Мелкий дождь</string>
-    <string name="rain">Дождь</string>
-    <string name="snow">Снег</string>
-    <string name="atmosphere">Смог</string>
-    <string name="clear">Ясно</string>
-    <string name="clouds">Облачно</string>
-    <string name="undefined">Неизвестность</string>
+    <string name="now">Now</string>
+    <string name="hourly">Hourly</string>
+    <string name="humidity">Humidity</string>
+    <string name="wind_speed">Wind Speed</string>
+    <string name="temperature">Temperature</string>
+    <string name="metres_in_second">m/s</string>
+    <string name="celsiusMeasureType" translatable="false">℃</string>
+    <string name="mainInfoDayOfWeek">Where am I?</string>
+    <string name="mainInfoDayAndMonth">16 September</string>
+    <string name="mainInfoTime" translatable="false">66:66</string>
+    <string name="thunderstorm">Thunderstorm</string>
+    <string name="drizzle">Drizzle</string>
+    <string name="rain">Rain</string>
+    <string name="snow">Snow</string>
+    <string name="atmosphere">Atmosphere</string>
+    <string name="clear">Clear</string>
+    <string name="clouds">Clouds</string>
+    <string name="successfully">Successfully!</string>
+    <string name="error_get_weather">Error in receiving data</string>
+    <string name="error_get_geo">Empty data of geolocation</string>
+    <string name="daily">Daily</string>
 </resources>
