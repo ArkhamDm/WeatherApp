@@ -31,14 +31,20 @@ class WeatherActivity : AppCompatActivity() {
         saveCords(cords[0], cords[1])
 
         weatherViewModel.update(latitude =  cords[0], longitude =  cords[1])
-        weatherViewModel.weatherInfo.observe(this) { weather ->
-            if (weather is WeatherResult.Api) {
-                binding.weatherState.setImageResource(R.drawable.weather_real)
-            }
 
+        weatherViewModel.weatherInfo.observe(this) { weather ->
             if (weather.data != null) {
+                if (weather is WeatherResult.Api) {
+                    binding.weatherState.setImageResource(R.drawable.weather_real)
+                    Toast.makeText(this, getString(R.string.successfully), Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, getString(R.string.error_get_weather), Toast.LENGTH_SHORT).show()
+                }
+
                 binding.cityText.text = weather.data.cityInfo.name.replace(' ', '\n')
                 setTimeOfData(binding, weather.data.hourWeatherInfo[0].time)
+
+                binding.swipeRefresh.isRefreshing = false
                 binding.mainInfo.shimmerLayout.hideShimmer()
             } else {
                 binding.mainInfo.shimmerLayout.startShimmer()
@@ -54,18 +60,6 @@ class WeatherActivity : AppCompatActivity() {
 
         binding.swipeRefresh.setOnRefreshListener {
             weatherViewModel.update(latitude = cords[0], longitude = cords[1])
-
-            weatherViewModel.weatherInfo.observe(this) { weather ->
-                if (weather is WeatherResult.Api) {
-                    Toast.makeText(this, getString(R.string.successfully), Toast.LENGTH_SHORT).show()
-                    binding.swipeRefresh.isRefreshing = false
-                }
-                else if ((weather is WeatherResult.Error) or (weather is WeatherResult.Database) ) {
-                    Toast.makeText(this, getString(R.string.error_get_weather), Toast.LENGTH_SHORT).show()
-                    binding.swipeRefresh.isRefreshing = false
-                }
-            }
-
         }
 
         binding.bottomNavigationView.setupWithNavController(

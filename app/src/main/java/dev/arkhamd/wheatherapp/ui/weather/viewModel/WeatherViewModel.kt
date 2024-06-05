@@ -11,12 +11,14 @@ import dev.arkhamd.data.WeatherRepository
 import dev.arkhamd.data.model.WeatherInfo
 import dev.arkhamd.wheatherapp.R
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
+
     @ApplicationContext private val applicationContext: Context
 ): ViewModel() {
     private val _weatherInfo: MutableLiveData<WeatherResult<WeatherInfo>> by lazy {
@@ -25,55 +27,63 @@ class WeatherViewModel @Inject constructor(
     val weatherInfo: LiveData<WeatherResult<WeatherInfo>>
         get() = _weatherInfo
 
+    private val compositeDisposable = CompositeDisposable()
+
     fun update(latitude: Float, longitude: Float) {
         setLoading()
 
-        val disposable = weatherRepository.getWeather(latitude, longitude)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { response ->
-                when (response) {
-                    is RequestResult.DatabaseSuccess -> {
-                        for (hourInfo in response.data!!.hourWeatherInfo) {
-                            hourInfo.weatherCondition = translateConditions(hourInfo.weatherCondition)
-                            hourInfo.weatherConditionIconId = setCondIcon(hourInfo.weatherCondition)
-                        }
-                        for (dayInfo in response.data!!.dayWeatherInfo) {
-                            dayInfo.condMain = translateConditions(dayInfo.condMain)
-                            dayInfo.iconId = setCondIcon(dayInfo.condMain)
+        compositeDisposable.add(
+            weatherRepository.getWeather(latitude, longitude)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { response ->
+                    when (response) {
+                        is RequestResult.DatabaseSuccess -> {
+                            for (hourInfo in response.data!!.hourWeatherInfo) {
+                                hourInfo.weatherCondition = translateConditions(hourInfo.weatherCondition)
+                                hourInfo.weatherConditionIconId = setCondIcon(hourInfo.weatherCondition)
+                            }
+                            for (dayInfo in response.data!!.dayWeatherInfo) {
+                                dayInfo.condMain = translateConditions(dayInfo.condMain)
+                                dayInfo.iconId = setCondIcon(dayInfo.condMain)
+                            }
+
+                            _weatherInfo.postValue(
+                                WeatherResult.Database(response.data!!)
+                            )
                         }
 
-                        _weatherInfo.postValue(
-                            WeatherResult.Database(response.data!!)
-                        )
+                        is RequestResult.ApiSuccess -> {
+                            for (weatherInfo in response.data!!.hourWeatherInfo) {
+                                weatherInfo.weatherCondition = translateConditions(weatherInfo.weatherCondition)
+                                weatherInfo.weatherConditionIconId = setCondIcon(weatherInfo.weatherCondition)
+                            }
+                            for (dayInfo in response.data!!.dayWeatherInfo) {
+                                dayInfo.condMain = translateConditions(dayInfo.condMain)
+                                dayInfo.iconId = setCondIcon(dayInfo.condMain)
+                            }
+
+                            _weatherInfo.postValue(
+                                WeatherResult.Api(response.data!!)
+                            )
+                        }
+
+                        is RequestResult.Error -> {
+                            _weatherInfo.postValue(
+                                WeatherResult.Error()
+                            )
+                        }
                     }
-
-                    is RequestResult.ApiSuccess -> {
-                        for (weatherInfo in response.data!!.hourWeatherInfo) {
-                            weatherInfo.weatherCondition = translateConditions(weatherInfo.weatherCondition)
-                            weatherInfo.weatherConditionIconId = setCondIcon(weatherInfo.weatherCondition)
-                        }
-                        for (dayInfo in response.data!!.dayWeatherInfo) {
-                            dayInfo.condMain = translateConditions(dayInfo.condMain)
-                            dayInfo.iconId = setCondIcon(dayInfo.condMain)
-                        }
-
-                        _weatherInfo.postValue(
-                            WeatherResult.Api(response.data!!)
-                        )
-                    }
-
-                    is RequestResult.Error -> {
-                        _weatherInfo.postValue(
-                            WeatherResult.Error()
-                        )
-                    }
-                }
-            }
+                })
     }
 
     private fun setLoading() {
         _weatherInfo.value = WeatherResult.Loading()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        compositeDisposable.dispose()
     }
 
     private fun translateConditions(condition: String): String {
