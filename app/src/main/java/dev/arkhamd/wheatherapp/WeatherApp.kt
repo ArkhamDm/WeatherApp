@@ -3,13 +3,19 @@ package dev.arkhamd.wheatherapp
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import androidx.work.Configuration
 import com.yandex.mapkit.MapKitFactory
 import dagger.hilt.android.HiltAndroidApp
 import dev.arkhamd.wheatherapp.ui.MapActivity
 import dev.arkhamd.wheatherapp.ui.WeatherActivity
+import dev.arkhamd.wheatherapp.ui.weather.notification.WeatherWorkerFactory
+import javax.inject.Inject
 
 @HiltAndroidApp
-class WeatherApp: Application() {
+class WeatherApp: Application(), Configuration.Provider {
+    @Inject
+    lateinit var weatherWorkerFactory: WeatherWorkerFactory
+
     override fun onCreate() {
         super.onCreate()
         MapKitFactory.setApiKey(BuildConfig.YANDEX_MAPS_API_KEY)
@@ -29,4 +35,9 @@ class WeatherApp: Application() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(weatherWorkerFactory)
+            .build()
 }

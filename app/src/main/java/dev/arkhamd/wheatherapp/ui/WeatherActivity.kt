@@ -8,15 +8,23 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import dev.arkhamd.wheatherapp.R
 import dev.arkhamd.wheatherapp.databinding.ActivityWeatherBinding
+import dev.arkhamd.wheatherapp.ui.weather.notification.WeatherWorker
 import dev.arkhamd.wheatherapp.ui.weather.viewModel.WeatherResult
 import dev.arkhamd.wheatherapp.ui.weather.viewModel.WeatherViewModel
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class WeatherActivity : AppCompatActivity() {
@@ -36,6 +44,9 @@ class WeatherActivity : AppCompatActivity() {
             if (weather.data != null) {
                 if (weather is WeatherResult.Api) {
                     binding.weatherState.setImageResource(R.drawable.weather_real)
+
+                    scheduleDailyNotification(applicationContext)
+
                     Toast.makeText(this, getString(R.string.successfully), Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, getString(R.string.error_get_weather), Toast.LENGTH_SHORT).show()
@@ -107,8 +118,53 @@ class WeatherActivity : AppCompatActivity() {
     }
 
     private fun loadCords(): FloatArray {
-        return intent.getFloatArrayExtra("cords") ?: floatArrayOf(55.065304f, 60.108337f).also {
-            Toast.makeText(baseContext, getString(R.string.error_get_geo), Toast.LENGTH_SHORT).show()
+        val sharedPreferences =
+            baseContext.getSharedPreferences("cords_prefs", Context.MODE_PRIVATE)
+
+        return intent.getFloatArrayExtra("cords")
+            ?: floatArrayOf(
+                sharedPreferences.getFloat("lat", -1f),
+                sharedPreferences.getFloat("lon", -1f)
+            ).takeIf { it[0] != -1f }
+            ?: floatArrayOf(55.065304f, 60.108337f).also {
+                Toast.makeText(baseContext,
+                    getString(R.string.error_get_geo),
+                    Toast.LENGTH_SHORT)
+                    .show()
+            }
+    }
+
+    private fun scheduleDailyNotification(context: Context) {
+        val currentTime = Calendar.getInstance()
+        val targetTime = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 12)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
         }
+
+        val initialDelay = if (targetTime.before(currentTime)) {
+            targetTime.add(Calendar.DAY_OF_MONTH, 1)
+            targetTime.timeInMillis - currentTime.timeInMillis
+        } else {
+            targetTime.timeInMillis - currentTime.timeInMillis
+        }
+
+        val workRequest = PeriodicWorkRequestBuilder<WeatherWorker>(
+            repeatInterval = 1,
+            repeatIntervalTimeUnit = TimeUnit.DAYS
+        )
+            .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            )
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "WeatherWork",
+            ExistingPeriodicWorkPolicy.UPDATE,
+            workRequest
+        )
     }
 }
