@@ -1,11 +1,16 @@
 package dev.arkhamd.wheatherapp.ui
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.work.Constraints
@@ -40,13 +45,12 @@ class WeatherActivity : AppCompatActivity() {
 
         weatherViewModel.update(latitude =  cords[0], longitude =  cords[1])
 
+        setPostNotificationPermission { scheduleDailyNotification(applicationContext) }
+
         weatherViewModel.weatherInfo.observe(this) { weather ->
             if (weather.data != null) {
                 if (weather is WeatherResult.Api) {
                     binding.weatherState.setImageResource(R.drawable.weather_real)
-
-                    scheduleDailyNotification(applicationContext)
-
                     Toast.makeText(this, getString(R.string.successfully), Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, getString(R.string.error_get_weather), Toast.LENGTH_SHORT).show()
@@ -134,6 +138,30 @@ class WeatherActivity : AppCompatActivity() {
             }
     }
 
+    private fun setPostNotificationPermission(
+        onSuccess: () -> Unit
+    ) {
+        val requestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) onSuccess()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> onSuccess()
+                else -> {
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        } else {
+            onSuccess()
+        }
+    }
+
     private fun scheduleDailyNotification(context: Context) {
         val currentTime = Calendar.getInstance()
         val targetTime = Calendar.getInstance().apply {
@@ -168,3 +196,4 @@ class WeatherActivity : AppCompatActivity() {
         )
     }
 }
+

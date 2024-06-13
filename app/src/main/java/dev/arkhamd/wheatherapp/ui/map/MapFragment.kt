@@ -19,6 +19,7 @@ import com.yandex.mapkit.layers.GeoObjectTapListener
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.GeoObjectSelectionMetadata
 import com.yandex.mapkit.map.Map
+import dev.arkhamd.wheatherapp.R
 import dev.arkhamd.wheatherapp.databinding.FragmentMapBinding
 import dev.arkhamd.wheatherapp.ui.map.dialog.MapOnSelectSpotDialog
 
@@ -55,44 +56,7 @@ class MapFragment : Fragment() {
         MapKitFactory.initialize(this.context)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
 
-        val requestPermissionLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { isGranted: Boolean ->
-                if (isGranted) {
-                    fusedLocationClient.lastLocation
-                        .addOnSuccessListener { location ->
-                            if (location != null) {
-                                moveMap(location.latitude, location.longitude, map)
-                            }
-                        }
-                        .addOnFailureListener { _ ->
-                            Toast.makeText(this.context, "Ошибка местоположения", Toast.LENGTH_SHORT).show()
-                        }
-                }
-            }
-
-        when {
-            ContextCompat.checkSelfPermission(
-                this.requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                fusedLocationClient.lastLocation
-                    .addOnSuccessListener { location ->
-                        if (location != null) {
-                            moveMap(location.latitude, location.longitude, map)
-                        }
-                    }
-                    .addOnFailureListener { _ ->
-                        Toast.makeText(this.context, "Ошибка местоположения", Toast.LENGTH_SHORT).show()
-                    }
-            }
-            else -> {
-                // ask for permission
-                requestPermissionLauncher.launch(
-                    Manifest.permission.ACCESS_COARSE_LOCATION)
-            }
-        }
+        setCoarseLocationPermission()
 
         map = binding.yandexMap.mapWindow.map
         map.move(START_POSITION, START_ANIMATION, null)
@@ -109,6 +73,45 @@ class MapFragment : Fragment() {
             30f
         )
         map.move(position, START_ANIMATION, null)
+    }
+
+    private fun setCoarseLocationPermission() {
+        val requestPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    fusedLocationClient.lastLocation
+                        .addOnSuccessListener { location ->
+                            if (location != null) moveMap(location.latitude, location.longitude, map)
+                        }
+                        .addOnFailureListener { _ ->
+                            Toast.makeText(this.context,
+                                getString(R.string.location_error), Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
+
+        when {
+            ContextCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location ->
+                        if (location != null) moveMap(location.latitude, location.longitude, map)
+                    }
+                    .addOnFailureListener { _ ->
+                        Toast.makeText(this.context,
+                            getString(R.string.location_error), Toast.LENGTH_SHORT).show()
+                    }
+            }
+            else -> {
+                // ask for permission
+                requestPermissionLauncher.launch(
+                    Manifest.permission.ACCESS_COARSE_LOCATION)
+            }
+        }
     }
 
     override fun onStart() {

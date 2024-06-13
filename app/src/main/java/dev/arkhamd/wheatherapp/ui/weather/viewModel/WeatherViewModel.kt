@@ -18,7 +18,6 @@ import javax.inject.Inject
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
-
     @ApplicationContext private val applicationContext: Context
 ): ViewModel() {
     private val _weatherInfo: MutableLiveData<WeatherResult<WeatherInfo>> by lazy {
