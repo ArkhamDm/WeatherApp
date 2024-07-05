@@ -18,6 +18,8 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
 import dev.arkhamd.wheatherapp.R
 import dev.arkhamd.wheatherapp.databinding.ActivityWeatherBinding
@@ -35,10 +37,12 @@ import java.util.concurrent.TimeUnit
 class WeatherActivity : AppCompatActivity() {
     private val weatherViewModel: WeatherViewModel by viewModels()
     private lateinit var binding: ActivityWeatherBinding
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWeatherBinding.inflate(layoutInflater)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         val cords = loadCords()
         saveCords(cords[0], cords[1])
@@ -83,6 +87,12 @@ class WeatherActivity : AppCompatActivity() {
         )
 
         setContentView(binding.root)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        setCoarseLocationPermission()
     }
 
     private fun setTimeOfData(
@@ -159,6 +169,57 @@ class WeatherActivity : AppCompatActivity() {
             }
         } else {
             onSuccess()
+        }
+    }
+
+    private fun setCoarseLocationPermission() {
+        val requestPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    fusedLocationClient.lastLocation
+                        .addOnSuccessListener { location ->
+                            if (location != null) {
+                                val latitude = location.latitude.toFloat()
+                                val longitude = location.longitude.toFloat()
+
+                                weatherViewModel.update(latitude, longitude)
+                                saveCords(latitude, longitude)
+                            }
+                        }
+                        .addOnFailureListener { _ ->
+                            Toast.makeText(this,
+                                getString(R.string.location_error), Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
+
+        when {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location ->
+                        if (location != null) {
+                            val latitude = location.latitude.toFloat()
+                            val longitude = location.longitude.toFloat()
+
+                            weatherViewModel.update(latitude, longitude)
+                            saveCords(latitude, longitude)
+                        }
+                    }
+                    .addOnFailureListener { _ ->
+                        Toast.makeText(this,
+                            getString(R.string.location_error), Toast.LENGTH_SHORT).show()
+                    }
+            }
+            else -> {
+                // ask for permission
+                requestPermissionLauncher.launch(
+                    Manifest.permission.ACCESS_COARSE_LOCATION)
+            }
         }
     }
 
