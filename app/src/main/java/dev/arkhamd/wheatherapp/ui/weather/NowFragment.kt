@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dev.arkhamd.wheatherapp.R
@@ -27,22 +28,7 @@ class NowFragment : Fragment() {
         weatherViewModel.weatherInfo.observe(this.viewLifecycleOwner) { weather ->
             Log.d(TAG, weather.toString())
             when (weather) {
-                is WeatherResult.Api -> {
-                    if (weather.data != null) {
-                        changeMainWeatherInfo(
-                            binding,
-                            iconId = weather.data.hourWeatherInfo[0].weatherConditionIconId,
-                            temperature = weather.data.hourWeatherInfo[0].temp,
-                            humidity = weather.data.hourWeatherInfo[0].humidity,
-                            windSpeed = weather.data.hourWeatherInfo[0].windSpeed,
-                            temperatureFeelsLike = weather.data.hourWeatherInfo[0].feelsLike
-                        )
-                        setLottiAnim(binding, weather.data.hourWeatherInfo[0].weatherCondition)
-                    }
-                    binding.weatherMainInfo.shimmerLayout.hideShimmer()
-                }
-
-                is WeatherResult.Database -> {
+                is WeatherResult.Api, is WeatherResult.Database -> {
                     if (weather.data != null) {
                         changeMainWeatherInfo(
                             binding,
@@ -58,7 +44,8 @@ class NowFragment : Fragment() {
                 }
 
                 is WeatherResult.Error -> {
-
+                    Toast.makeText(context,
+                        getString(R.string.error_weather_data), Toast.LENGTH_SHORT).show()
                 }
 
                 is WeatherResult.Loading -> {

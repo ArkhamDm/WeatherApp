@@ -77,10 +77,6 @@ class WeatherActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.swipeRefresh.setOnRefreshListener {
-            weatherViewModel.update(latitude = cords[0], longitude = cords[1])
-        }
-
         binding.bottomNavigationView.setupWithNavController(
             supportFragmentManager.findFragmentById(binding.navHostFragment.id)
             !!.findNavController()
@@ -93,6 +89,11 @@ class WeatherActivity : AppCompatActivity() {
         super.onStart()
 
         setCoarseLocationPermission()
+
+        binding.swipeRefresh.setOnRefreshListener {
+            val cords = loadCords()
+            weatherViewModel.update(latitude = cords[0], longitude = cords[1])
+        }
     }
 
     private fun setTimeOfData(

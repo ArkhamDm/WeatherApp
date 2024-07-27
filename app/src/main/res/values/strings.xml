@@ -22,5 +22,6 @@
     <string name="error_get_weather">Error in receiving data</string>
     <string name="error_get_geo">Empty data of geolocation</string>
     <string name="daily">Daily</string>
-    <string name="location_error">Ошибка местоположения</string>
+    <string name="location_error">Location error</string>
+    <string name="error_weather_data">Weather data error</string>
 </resources>

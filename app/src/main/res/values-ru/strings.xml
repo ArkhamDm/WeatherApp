@@ -19,4 +19,6 @@
     <string name="humidity">Влажность</string>
     <string name="wind_speed">Скорость ветра</string>
     <string name="temperature">Темература</string>
+    <string name="location_error">Ошибка в местоположении</string>
+    <string name="error_weather_data">Ошибка данных погоды</string>
 </resources>

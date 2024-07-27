@@ -13,7 +13,7 @@ class TypewriterTextView(context: Context, attrs: AttributeSet) : AppCompatTextV
 
     private val mHandler = Handler()
 
-    private val characterAdder: Runnable = object : Runnable {
+    private val characterAdder = object : Runnable {
         override fun run() {
             text = mText?.subSequence(0, mIndex++)
             if (mIndex <= (mText?.length ?: 0)) {
@@ -24,7 +24,6 @@ class TypewriterTextView(context: Context, attrs: AttributeSet) : AppCompatTextV
 
     init {
         isElegantTextHeight = true
-
         mText = text
         animateText(mText)
     }

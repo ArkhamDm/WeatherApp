@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dev.arkhamd.data.model.DayWeatherInfo
@@ -27,32 +28,19 @@ class WeeklyFragment : Fragment() {
         weatherViewModel.weatherInfo.observe(this.viewLifecycleOwner) { weather ->
 
             when (weather) {
-                is WeatherResult.Api -> {
+                is WeatherResult.Api, is WeatherResult.Database -> {
                     if (weather.data != null) {
-
                         setLoadedData(
                             binding,
                             weather.data.dayWeatherInfo
                         )
-
-                    }
-
-                    hideShimmer(binding)
-                }
-                is WeatherResult.Database -> {
-                    if (weather.data != null) {
-
-                        setLoadedData(
-                            binding,
-                            weather.data.dayWeatherInfo
-                        )
-
                     }
 
                     hideShimmer(binding)
                 }
                 is WeatherResult.Error -> {
-
+                    Toast.makeText(context,
+                        getString(R.string.error_weather_data), Toast.LENGTH_SHORT).show()
                 }
                 is WeatherResult.Loading -> {
                     startShimmer(binding)
@@ -67,53 +55,15 @@ class WeeklyFragment : Fragment() {
         binding: FragmentWeeklyBinding,
         dayData: List<DayWeatherInfo>
     ) {
-        binding.dayWeather1.apply {
-            dayData[0].apply {
-                dayTemperatureText.text = temp
-                dayWeatherIcon.setImageResource(iconId)
-                dayWeatherDescText.text = condMain
-                dayHumidityText.text = humidity + "%"
-                dayWindSpeedText.text = windSpeed + " " + getString(R.string.metres_in_second)
-                dayDateText.text = getDate(time)
-                dayWeekdayText.text = getWeekDay(time)
-            }
-        }
-        binding.dayWeather2.apply {
-            dayData[1].apply {
-                dayTemperatureText.text = temp
-                dayWeatherIcon.setImageResource(iconId)
-                dayWeatherDescText.text = condMain
-                dayHumidityText.text = humidity + "%"
-                dayWindSpeedText.text = windSpeed + " " + getString(R.string.metres_in_second)
-                dayDateText.text = getDate(time)
-                dayWeekdayText.text = getWeekDay(time)
-            }
-        }
-        binding.dayWeather3.apply {
-            dayData[2].apply {
-                dayTemperatureText.text = temp
-                dayWeatherIcon.setImageResource(iconId)
-                dayWeatherDescText.text = condMain
-                dayHumidityText.text = humidity + "%"
-                dayWindSpeedText.text = windSpeed + " " + getString(R.string.metres_in_second)
-                dayDateText.text = getDate(time)
-                dayWeekdayText.text = getWeekDay(time)
-            }
-        }
-        binding.dayWeather4.apply {
-            dayData[3].apply {
-                dayTemperatureText.text = temp
-                dayWeatherIcon.setImageResource(iconId)
-                dayWeatherDescText.text = condMain
-                dayHumidityText.text = humidity + "%"
-                dayWindSpeedText.text = windSpeed + " " + getString(R.string.metres_in_second)
-                dayDateText.text = getDate(time)
-                dayWeekdayText.text = getWeekDay(time)
-            }
-        }
-        if (dayData.size > 4) {
-            binding.dayWeather5.apply {
-                dayData[4].apply {
+        mapOf(
+            binding.dayWeather1 to 0,
+            binding.dayWeather2 to 1,
+            binding.dayWeather3 to 2,
+            binding.dayWeather4 to 3,
+            binding.dayWeather5 to 4
+        ).forEach { (dayWeatherBinding, dayDataIndex) ->
+            dayWeatherBinding.apply {
+                dayData[dayDataIndex].apply {
                     dayTemperatureText.text = temp
                     dayWeatherIcon.setImageResource(iconId)
                     dayWeatherDescText.text = condMain
@@ -144,22 +94,18 @@ class WeeklyFragment : Fragment() {
         binding: FragmentWeeklyBinding
     ) {
         binding.apply {
-            dayWeather1.shimmerLayout.startShimmer()
-            dayWeather2.shimmerLayout.startShimmer()
-            dayWeather3.shimmerLayout.startShimmer()
-            dayWeather4.shimmerLayout.startShimmer()
-            dayWeather5.shimmerLayout.startShimmer()
+            listOf(
+                dayWeather1, dayWeather2, dayWeather3, dayWeather4, dayWeather5
+            ).forEach { it.shimmerLayout.startShimmer() }
         }
     }
     private fun hideShimmer(
             binding: FragmentWeeklyBinding
     ) {
         binding.apply {
-            dayWeather1.shimmerLayout.hideShimmer()
-            dayWeather2.shimmerLayout.hideShimmer()
-            dayWeather3.shimmerLayout.hideShimmer()
-            dayWeather4.shimmerLayout.hideShimmer()
-            dayWeather5.shimmerLayout.hideShimmer()
+            listOf(
+                dayWeather1, dayWeather2, dayWeather3, dayWeather4, dayWeather5
+            ).forEach { it.shimmerLayout.hideShimmer() }
         }
     }
 
